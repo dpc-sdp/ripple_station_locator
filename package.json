@@ -1,0 +1,26 @@
+{
+  "name": "@dpc-sdp/ripple-station-locator",
+  "version": "1.34.0",
+  "description": "Police station locator.",
+  "license": "Apache-2.0",
+  "main": "index.vue",
+  "homepage": "https://ripple.sdp.vic.gov.au",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dpc-sdp/ripple.git#master"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "dependencies": {
+    "@dpc-sdp/ripple-global": "1.34.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Victoria",
+    "Police"
+  ],
+  "author": "Salsa Digital"
+}
