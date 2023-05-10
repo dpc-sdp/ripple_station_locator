@@ -1,15 +1,19 @@
 <template>
   <div class="vp-station-locator">
+    <rpl-form :formData="searchForm" class="vp-station-locator__form" :submitHandler="onSearchSubmit" :submitFormOnClear="true" :scrollToMessage="false"></rpl-form>
+
     <rpl-tabs class="vp-station-locator__tabs" :tabs="tabs" :activeTab="activeTab" @rpl-tab-switch="switchTab" />
     <div class="vp-station-locator__map" v-if="activeTab === 'map'">Map view</div>
     <div class="vp-station-locator__list" v-if="activeTab === 'list'">
-      <rpl-complex-data-table caption="test 123" is-row-oriented v-bind="stationLocatorProps" :rowHeaders="true"></rpl-complex-data-table>
+      <rpl-complex-data-table is-row-oriented v-bind="stationLocatorProps" :rowHeaders="true"></rpl-complex-data-table>
+      {{ total }}
     </div>
   </div>
 </template>
 
 <script>
 import { RplSearchResultsLayout } from '@dpc-sdp/ripple-search'
+import { RplForm, RplFormEventBus } from '@dpc-sdp/ripple-form'
 import { RplComplexDataTable } from '@dpc-sdp/ripple-data-table'
 import RplTabs from '@dpc-sdp/ripple-tabs/Tabs.vue'
 
@@ -18,6 +22,7 @@ export default {
   props: {
   },
   components: {
+    RplForm,
     RplComplexDataTable,
     RplSearchResultsLayout,
     RplTabs
@@ -37,6 +42,178 @@ export default {
           icon: 'map_marker'
         }
       ],
+      total: 0,
+      distance: [5, 100],
+      specialtyservices: [],
+      open24hours: false,
+      searchForm: {
+        model: {
+          suburb: '',
+          advancedFilters: ''
+        },
+        schema: {
+          groups: [
+            {
+              fields: [
+                // {
+                //   type: 'rplAutocomplete',
+                //   values: [],
+                //   label: 'Search by suburb or postcode',
+                //   styleClasses: ['vp-form__element'],
+                //   model: 'suburb',
+                //   placeholder: 'Search'
+                // },
+                {
+                  type: 'rplslider',
+                  label: 'Filter by distance',
+                  model: 'distance',
+                  hint: '5km to 100km',
+                  step: 1,
+                  suffix: 'km',
+                  min: 5,
+                  max: 100,
+                },
+                {
+                  type: 'rplselect',
+                  values: [
+                    {
+                        id: 'Crime Investigations Unit (CIU)',
+                        name: 'Crime Investigations Unit (CIU)'
+                    },
+                    {
+                        id: 'Crime Prevention Officer (CPO)',
+                        name: 'Crime Prevention Officer (CPO)'
+                    },
+                    {
+                        id: 'Crime Scene Services (CSS)',
+                        name: 'Crime Scene Services (CSS)'
+                    },
+                    {
+                        id: 'Divisional Intilligence Unit (DIU)',
+                        name: 'Divisional Intilligence Unit (DIU)'
+                    },
+                    {
+                        id: 'Family Violence Investigations Unit (FVIU)',
+                        name: 'Family Violence Investigations Unit (FVIU)'
+                    },
+                    {
+                        id: 'Family Violence Liaison Officer (FVLO)',
+                        name: 'Family Violence Liaison Officer (FVLO)'
+                    },
+                    {
+                        id: 'Farm Crime Liaison Officer (FCLO)',
+                        name: 'Farm Crime Liaison Officer (FCLO)'
+                    },
+                    {
+                        id: 'Fingerprint office',
+                        name: 'Fingerprint office'
+                    },
+                    {
+                        id: 'Highway Patrol (HWP)',
+                        name: 'Highway Patrol (HWP)'
+                    },
+                    {
+                        id: 'Justice of the Peace',
+                        name: 'Justice of the Peace'
+                    },
+                    {
+                        id: 'LGBTIQ+ Liaison Officer (LLO)',
+                        name: 'LGBTIQ+ Liaison Officer (LLO)'
+                    },
+                    {
+                        id: 'Neighbourhood Watch',
+                        name: 'Neighbourhood Watch'
+                    },
+                    {
+                        id: 'Pro-active Policing Unit (PPU)',
+                        name: 'Pro-active Policing Unit (PPU)'
+                    },
+                    {
+                        id: 'Prosecutions Unit',
+                        name: 'Prosecutions Unit'
+                    },
+                    {
+                        id: 'Protective services officers (PSO)',
+                        name: 'Protective services officers (PSO)'
+                    },
+                    {
+                        id: 'Regional Firearms Officers',
+                        name: 'Regional Firearms Officers'
+                    },
+                    {
+                        id: 'Regional Response Unit',
+                        name: 'Regional Response Unit'
+                    },
+                    {
+                        id: 'Registered Sex Offenders Management Unit',
+                        name: 'Registered Sex Offenders Management Unit'
+                    },
+                    {
+                        id: 'Sexual Offences and Child Abuse Investigation Team (SOCIT)',
+                        name: 'Sexual Offences and Child Abuse Investigation Team (SOCIT)'
+                    },
+                    {
+                        id: 'Traffic Management Unit (TMU)',
+                        name: 'Traffic Management Unit (TMU)'
+                    },
+                    {
+                        id: 'Victim Assistance Support Officers',
+                        name: 'Victim Assistance Support Officers'
+                    },
+                    {
+                        id: 'Water Police Search and Rescue Squad',
+                        name: 'Water Police Search and Rescue Squad'
+                    },
+                    {
+                        id: 'Youth Resource Officer',
+                        name: 'Youth Resource Officer'
+                    }
+                  ],
+                  multiselect: true,
+                  label: 'Specialty services or facilities',
+                  placeholder: 'Select service/facility',
+                  styleClasses: ['vp-form__element'],
+                  model: 'specialtyservices'
+                }
+              ]
+            },
+            {
+              fields: [
+                {
+                  type: 'rplcheckbox',
+                  inlineLabel: 'Locations open 24 hours',
+                  model: 'open24hours',
+                }
+              ]
+            },
+            {
+              fields: [
+                {
+                  type: 'rplclearform',
+                  buttonText: 'Clear search filters',
+                  // visible: showClearOnDirtyForm,
+                  styleClasses: ['form-group--center']
+                }
+              ]
+            },
+            {
+              fields: [
+                {
+                  type: 'rplsubmitloader',
+                  buttonText: 'Search',
+                  styleClasses: ['vp-es-search-action'],
+                  loading: false
+                }
+              ]
+            }
+          ]
+        },
+        formOptions: {
+          validateAfterLoad: true,
+          validateAfterChanged: true
+        },
+        formState: {}
+      },
       stationLocatorProps: {
         dataSet: 'testing_sites',
         enableMap: true,
@@ -66,6 +243,7 @@ export default {
           //   component: () => import('./components/VpStationSpecialtyServices.vue')
           // }
         ],
+        results: [],
         items: [
           ['yo', 'ye', 'ya', 'yi', 'yu'],
           ['no', 'ne', 'na', 'ni', 'nu']
@@ -121,101 +299,14 @@ export default {
         //     }
         //   }
         // },
-        // searchForm: {
-        //   model: {
-        //     suburb: '',
-        //     advancedFilters: ''
-        //   },
-        //   schema: {
-        //     groups: [
-        //       {
-        //         fields: [
-        //           {
-        //             type: 'rplAutocomplete',
-        //             values: [],
-        //             label: 'Search by suburb or postcode',
-        //             styleClasses: ['ch-form__element'],
-        //             model: 'suburb',
-        //             placeholder: 'Search'
-        //           },
-        //           {
-        //             type: 'rplselect',
-        //             values: [
-        //               {
-        //                 id: 'drivethrough',
-        //                 name: 'Drive-through clinic'
-        //               },
-        //               {
-        //                 id: 'walkin',
-        //                 name: 'Walk-in clinic'
-        //               },
-        //               {
-        //                 id: 'opennow',
-        //                 name: 'Open now'
-        //               },
-        //               {
-        //                 id: 'testtracker',
-        //                 name: 'Testing Registration Form site'
-        //               },
-        //               {
-        //                 id: 'nogp',
-        //                 name: 'No GP referral required'
-        //               },
-        //               {
-        //                 id: 'pathology',
-        //                 name: 'Pathology collection centre'
-        //               },
-        //               {
-        //                 id: 'commonwealth',
-        //                 name: 'GP Respiratory Clinic'
-        //               },
-        //               {
-        //                 id: 'ratsavailable',
-        //                 name: 'Rapid antigen test kits available'
-        //               },
-        //               {
-        //                 id: 'ndisprogram',
-        //                 name: 'Free rapid antigen test kits for people with a disability'
-        //               },
-        //               {
-        //                 id: 'disabilityaccess',
-        //                 name: 'Options for access for people with disability'
-        //               }
-        //             ],
-        //             multiselect: true,
-        //             label: 'Advanced search',
-        //             placeholder: 'All site types',
-        //             styleClasses: ['ch-form__element'],
-        //             model: 'advancedFilters'
-        //           },
-        //           {
-        //             type: 'rplsubmitloader',
-        //             buttonText: 'Search',
-        //             styleClasses: ['ch-es-search-action'],
-        //             loading: false
-        //           }
-        //         ]
-        //       },
-        //       {
-        //         fields: [
-        //           {
-        //             type: 'rplclearform',
-        //             buttonText: 'Clear search filters',
-        //             visible: showClearOnDirtyForm,
-        //             styleClasses: ['form-group--center']
-        //           }
-        //         ]
-        //       }
-        //     ]
-        //   },
-        //   formOptions: {
-        //     validateAfterLoad: true,
-        //     validateAfterChanged: true
-        //   },
-        //   formState: {}
-        // }
       }
     }
+  },
+  mounted () {
+    if (this.submitOnFormUpdate) {
+      RplFormEventBus.$on('model-updated', this.onModelUpdate)
+    }
+    RplFormEventBus.$on('clear-form', this.onClearForm)
   },
   methods: {
     handleEvent (eventName, value) {
@@ -229,6 +320,81 @@ export default {
       //   })
       // }
     },
+    onClearForm () {
+      // if (this.onModelUpdateHook && typeof this.onModelUpdateHook === 'function') {
+      //   this.$nextTick(() => {
+      //     this.onModelUpdateHook()
+      //   })
+      // }
+      this.handleEvent('clear-form')
+    },
+    onSearchSubmit () {
+      // this.appliedFilters = JSON.parse(JSON.stringify(this.searchForm.model))
+      // if (this.onSearchSubmitHook) {
+      //   this.onSearchSubmitHook(this.appliedFilters)
+      // } else {
+      //   if (this.$refs.searchresults) {
+      //     VueScrollTo.scrollTo(this.$refs.searchresults.$el, 500, { offset: -50 })
+      //   }
+      //   this.page = 1
+      // }
+      // this.fetchData()
+      this.handleEvent('form-submit')
+    }
+    // async onModelUpdate (newVal, schema) {
+    //   // if (this.onModelUpdateHook && typeof this.onModelUpdateHook === 'function') {
+    //   //   this.onModelUpdateHook()
+    //   // } else {
+    //   //   this.page = 1
+    //   //   if (this.submitOnFormUpdate) {
+    //   //     this.fetchData()
+    //   //   }
+    //   // }
+    //   this.handleEvent('form-update', { value: newVal, field: schema })
+    // },
+    // async fetchData (showLoading = true) {
+    //   return false
+    //   // if (showLoading) {
+    //   //   this.loading = true
+    //   // }
+    //   // if (!this.results) {
+    //   //   let params = {}
+    //   //   if (this.serverSideFiltering) {
+    //   //     params = this.getRequestParams()
+    //   //   } else {
+    //   //     params.limit = 9999
+    //   //   }
+
+    //   //   const BASE_URL = this.$nuxt.context.env
+    //   //   try {
+    //   //     const { data, status } = await this.$axios.get(`https://e9a0d0eb1a70d8af188eab7954371209.sdp2-b.elastic.sdp.vic.gov.au/elasticsearch_index_default_node/_search?q=title:Alexandra%20police%20station`, { params })
+    //   //     if (status === 200 && data && data.total > 0 && data.results && Array.isArray(data.results)) {
+    //   //       this.total = data.total
+    //   //       this.results = data.results
+    //   //       // if (this.serverSideFiltering && data.aggregations) {
+    //   //       //   this.aggs = data.aggregations
+    //   //       // }
+    //   //     }
+    //   //     // ChDataListingEventBus.$emit('fetch', { status: 'ok' })
+    //   //   } catch (error) {
+    //   //     this.results = []
+    //   //     this.total = 0
+    //   //     // ChDataListingEventBus.$emit('fetch', { status: 'error' })
+    //   //   }
+    //   // }
+
+    //   // // if (this.enableMap) {
+    //   // //   this.setMapData()
+    //   // // }
+    //   // // if (this.enableTable) {
+    //   // //   this.setTableData()
+    //   // // }
+    //   // if (showLoading) {
+    //   //   setTimeout(() => {
+    //   //     this.loading = false
+    //   //   }, 200)
+    //   // }
+    // },
   }
 }
 </script>
@@ -236,4 +402,71 @@ export default {
 <style lang="scss">
   @import "~@dpc-sdp/ripple-global/scss/settings";
   @import "~@dpc-sdp/ripple-global/scss/tools";
+
+  $vp-form-padding-mob: rem(20px);
+  $vp-form-padding-desk: $rpl-space-4;
+  $vp-form-element-spacing: $rpl-space-4;
+
+  .vp-station-locator {
+    &__form {
+      padding: $vp-form-padding-mob;
+      @include rpl_breakpoint('l') {
+        padding: $vp-form-padding-desk;
+        padding-top: rem(24px);
+        padding-bottom: $vp-form-padding-desk / 2;
+      }
+      background-color: #f5f5f8;
+      border-radius: $rpl-space;
+      margin-bottom: rem(75px);
+      fieldset {
+        margin: 0 0 ($vp-form-element-spacing / 2) 0;
+        display: flex;
+        flex-direction: column;
+        @include rpl_breakpoint('l') {
+          flex-direction: row;
+          align-items: flex-start;
+          margin-left: -$vp-form-element-spacing / 2;
+          margin-right: -$vp-form-element-spacing / 2;
+        }
+      }
+      .vp-es-search-action,
+      [type=submit] {
+        width: 100%;
+      }
+      .form-group {
+        width: 100%;
+        flex: 1 1;
+        @include rpl_breakpoint('l') {
+          margin: 0 $vp-form-element-spacing / 2;
+        }
+        &--center {
+          width: auto;
+          margin: auto;
+          flex: none;
+        }
+        @include rpl_breakpoint_down('l') {
+          margin-bottom: rem(20px);
+        }
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      .rpl-select__trigger {
+        background-color: #fff;
+        border-color: #d7dbe0;
+      }
+
+      .rpl-select--open {
+        .rpl-select__trigger {
+          border-color: #274b93;
+        }
+      }
+
+      .rpl-checkbox__box {
+        background-color: #fff;
+        border-color: #d7dbe0;
+      }
+    }
+  }
 </style>
