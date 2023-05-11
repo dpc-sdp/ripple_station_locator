@@ -1,33 +1,49 @@
 <template>
   <div class="vp-station-locator">
-    <rpl-form :formData="searchForm" class="vp-station-locator__form" :submitHandler="onSearchSubmit" :submitFormOnClear="true" :scrollToMessage="false"></rpl-form>
+    <rpl-form :formData="searchForm" class="vp-station-locator__form" :submitHandler="onSearchSubmit"
+      :submitFormOnClear="true" :scrollToMessage="false"></rpl-form>
 
     <rpl-tabs class="vp-station-locator__tabs" :tabs="tabs" :activeTab="activeTab" @rpl-tab-switch="switchTab" />
     <div class="vp-station-locator__map" v-if="activeTab === 'map'">Map view</div>
     <div class="vp-station-locator__list" v-if="activeTab === 'list'">
-      <rpl-complex-data-table is-row-oriented v-bind="stationLocatorProps" :rowHeaders="true"></rpl-complex-data-table>
-      {{ total }}
+      <rpl-search-results-layout v-bind="stationLocatorProps" :searchResults="stationLocatorProps.results" :count="total">
+        <template v-slot:results="resultsProps">
+          <rpl-col cols="full" class="rpl-markup__table">
+            <rpl-search-results-table :columnConfig="stationLocatorProps.columns" :items="resultsProps.searchResults"></rpl-search-results-table>
+          </rpl-col>
+        </template>
+        <template slot="noresults">
+          <div class="ch-data-listing__no-results">
+            <slot name="noresults">
+              <h3>Sorry, no police stations match your search.</h3>
+              <p>Try again with different search criteria.</p>
+            </slot>
+          </div>
+        </template>
+      </rpl-search-results-layout>
     </div>
   </div>
 </template>
 
 <script>
-import { RplSearchResultsLayout } from '@dpc-sdp/ripple-search'
-import { RplForm, RplFormEventBus } from '@dpc-sdp/ripple-form'
+import { RplCol } from '@dpc-sdp/ripple-grid'
 import { RplComplexDataTable } from '@dpc-sdp/ripple-data-table'
+import { RplForm, RplFormEventBus } from '@dpc-sdp/ripple-form'
+import { RplSearchResultsLayout, RplSearchResultsTable } from '@dpc-sdp/ripple-search'
 import RplTabs from '@dpc-sdp/ripple-tabs/Tabs.vue'
+import { mapTableRows } from './middleware.js'
 
 export default {
   name: 'RplStationLocator',
-  props: {
-  },
   components: {
-    RplForm,
+    RplCol,
     RplComplexDataTable,
+    RplForm,
     RplSearchResultsLayout,
+    RplSearchResultsTable,
     RplTabs
   },
-  data () {
+  data() {
     return {
       activeTab: 'list',
       tabs: [
@@ -63,110 +79,110 @@ export default {
                 //   model: 'suburb',
                 //   placeholder: 'Search'
                 // },
-                {
-                  type: 'rplslider',
-                  label: 'Filter by distance',
-                  model: 'distance',
-                  hint: '5km to 100km',
-                  step: 1,
-                  suffix: 'km',
-                  min: 5,
-                  max: 100,
-                },
+                // {
+                //   type: 'rplslider',
+                //   label: 'Filter by distance',
+                //   model: 'distance',
+                //   hint: '5km to 100km',
+                //   step: 1,
+                //   suffix: 'km',
+                //   min: 5,
+                //   max: 100,
+                // },
                 {
                   type: 'rplselect',
                   values: [
                     {
-                        id: 'Crime Investigations Unit (CIU)',
-                        name: 'Crime Investigations Unit (CIU)'
+                      id: 'Crime Investigations Unit (CIU)',
+                      name: 'Crime Investigations Unit (CIU)'
                     },
                     {
-                        id: 'Crime Prevention Officer (CPO)',
-                        name: 'Crime Prevention Officer (CPO)'
+                      id: 'Crime Prevention Officer (CPO)',
+                      name: 'Crime Prevention Officer (CPO)'
                     },
                     {
-                        id: 'Crime Scene Services (CSS)',
-                        name: 'Crime Scene Services (CSS)'
+                      id: 'Crime Scene Services (CSS)',
+                      name: 'Crime Scene Services (CSS)'
                     },
                     {
-                        id: 'Divisional Intilligence Unit (DIU)',
-                        name: 'Divisional Intilligence Unit (DIU)'
+                      id: 'Divisional Intilligence Unit (DIU)',
+                      name: 'Divisional Intilligence Unit (DIU)'
                     },
                     {
-                        id: 'Family Violence Investigations Unit (FVIU)',
-                        name: 'Family Violence Investigations Unit (FVIU)'
+                      id: 'Family Violence Investigations Unit (FVIU)',
+                      name: 'Family Violence Investigations Unit (FVIU)'
                     },
                     {
-                        id: 'Family Violence Liaison Officer (FVLO)',
-                        name: 'Family Violence Liaison Officer (FVLO)'
+                      id: 'Family Violence Liaison Officer (FVLO)',
+                      name: 'Family Violence Liaison Officer (FVLO)'
                     },
                     {
-                        id: 'Farm Crime Liaison Officer (FCLO)',
-                        name: 'Farm Crime Liaison Officer (FCLO)'
+                      id: 'Farm Crime Liaison Officer (FCLO)',
+                      name: 'Farm Crime Liaison Officer (FCLO)'
                     },
                     {
-                        id: 'Fingerprint office',
-                        name: 'Fingerprint office'
+                      id: 'Fingerprint office',
+                      name: 'Fingerprint office'
                     },
                     {
-                        id: 'Highway Patrol (HWP)',
-                        name: 'Highway Patrol (HWP)'
+                      id: 'Highway Patrol (HWP)',
+                      name: 'Highway Patrol (HWP)'
                     },
                     {
-                        id: 'Justice of the Peace',
-                        name: 'Justice of the Peace'
+                      id: 'Justice of the Peace',
+                      name: 'Justice of the Peace'
                     },
                     {
-                        id: 'LGBTIQ+ Liaison Officer (LLO)',
-                        name: 'LGBTIQ+ Liaison Officer (LLO)'
+                      id: 'LGBTIQ+ Liaison Officer (LLO)',
+                      name: 'LGBTIQ+ Liaison Officer (LLO)'
                     },
                     {
-                        id: 'Neighbourhood Watch',
-                        name: 'Neighbourhood Watch'
+                      id: 'Neighbourhood Watch',
+                      name: 'Neighbourhood Watch'
                     },
                     {
-                        id: 'Pro-active Policing Unit (PPU)',
-                        name: 'Pro-active Policing Unit (PPU)'
+                      id: 'Pro-active Policing Unit (PPU)',
+                      name: 'Pro-active Policing Unit (PPU)'
                     },
                     {
-                        id: 'Prosecutions Unit',
-                        name: 'Prosecutions Unit'
+                      id: 'Prosecutions Unit',
+                      name: 'Prosecutions Unit'
                     },
                     {
-                        id: 'Protective services officers (PSO)',
-                        name: 'Protective services officers (PSO)'
+                      id: 'Protective services officers (PSO)',
+                      name: 'Protective services officers (PSO)'
                     },
                     {
-                        id: 'Regional Firearms Officers',
-                        name: 'Regional Firearms Officers'
+                      id: 'Regional Firearms Officers',
+                      name: 'Regional Firearms Officers'
                     },
                     {
-                        id: 'Regional Response Unit',
-                        name: 'Regional Response Unit'
+                      id: 'Regional Response Unit',
+                      name: 'Regional Response Unit'
                     },
                     {
-                        id: 'Registered Sex Offenders Management Unit',
-                        name: 'Registered Sex Offenders Management Unit'
+                      id: 'Registered Sex Offenders Management Unit',
+                      name: 'Registered Sex Offenders Management Unit'
                     },
                     {
-                        id: 'Sexual Offences and Child Abuse Investigation Team (SOCIT)',
-                        name: 'Sexual Offences and Child Abuse Investigation Team (SOCIT)'
+                      id: 'Sexual Offences and Child Abuse Investigation Team (SOCIT)',
+                      name: 'Sexual Offences and Child Abuse Investigation Team (SOCIT)'
                     },
                     {
-                        id: 'Traffic Management Unit (TMU)',
-                        name: 'Traffic Management Unit (TMU)'
+                      id: 'Traffic Management Unit (TMU)',
+                      name: 'Traffic Management Unit (TMU)'
                     },
                     {
-                        id: 'Victim Assistance Support Officers',
-                        name: 'Victim Assistance Support Officers'
+                      id: 'Victim Assistance Support Officers',
+                      name: 'Victim Assistance Support Officers'
                     },
                     {
-                        id: 'Water Police Search and Rescue Squad',
-                        name: 'Water Police Search and Rescue Squad'
+                      id: 'Water Police Search and Rescue Squad',
+                      name: 'Water Police Search and Rescue Squad'
                     },
                     {
-                        id: 'Youth Resource Officer',
-                        name: 'Youth Resource Officer'
+                      id: 'Youth Resource Officer',
+                      name: 'Youth Resource Officer'
                     }
                   ],
                   multiselect: true,
@@ -215,17 +231,35 @@ export default {
         formState: {}
       },
       stationLocatorProps: {
-        dataSet: 'testing_sites',
         enableMap: true,
         columns: [
-          {
+        {
             label: 'Suburb',
+            key: 'suburb',
             component: () => import('./components/VpStationSuburb.vue')
           },
-          'Location',
-          'Contact',
-          'Opening hours',
-          'Specialty service or facility'
+          {
+            label: 'Location',
+            key: 'location'
+          },
+          {
+            label: 'Contact',
+            key: 'contact'
+          },
+          {
+            label: 'Opening hours',
+            key: 'opening_hours'
+          },
+          {
+            label: 'Specialty service or facility',
+            key: 'specialty_services',
+            component: () => import('./components/VpStationSpecialtyServices.vue')
+          },
+          // 'Suburb',
+          // 'Location',
+          // 'Contact',
+          // 'Opening hours',
+          // 'Specialty service or facility'
           // {
           //   label: 'Location',
           //   component: () => import('./components/VpStationLocation.vue')
@@ -245,8 +279,37 @@ export default {
         ],
         results: [],
         items: [
-          ['yo', 'ye', 'ya', 'yi', 'yu'],
-          ['no', 'ne', 'na', 'ni', 'nu']
+          {
+            'suburb': {
+              'suburb': 'Dandenong',
+              'test': 'Green hat'
+            },
+            'location': 'Dandenong Police Station',
+            'opening_hours': 'Non-24 Hours',
+            'contact': 'eildon.uni@police.vic.gov.au',
+            'specialty_services': 'Blah'
+          },
+          {
+            'suburb': 'Dandenong',
+            'location': 'Dandenong Police Station',
+            'opening_hours': 'Non-24 Hours',
+            'contact': 'eildon.uni@police.vic.gov.au',
+            'specialty_services': 'Blah'
+          },
+          {
+            'suburb': 'Dandenong',
+            'location': 'Dandenong Police Station',
+            'opening_hours': 'Non-24 Hours',
+            'contact': 'eildon.uni@police.vic.gov.au',
+            'specialty_services': 'Blah'
+          },
+          {
+            'suburb': 'Dandenong',
+            'location': 'Dandenong Police Station',
+            'opening_hours': 'Non-24 Hours',
+            'contact': 'eildon.uni@police.vic.gov.au',
+            'specialty_services': 'Blah'
+          }
         ],
         sortOptions: [
           {
@@ -302,16 +365,17 @@ export default {
       }
     }
   },
-  mounted () {
+  mounted() {
+    this.fetchData()
     if (this.submitOnFormUpdate) {
       RplFormEventBus.$on('model-updated', this.onModelUpdate)
     }
     RplFormEventBus.$on('clear-form', this.onClearForm)
   },
   methods: {
-    handleEvent (eventName, value) {
+    handleEvent(eventName, value) {
     },
-    switchTab (tab) {
+    switchTab(tab) {
       this.activeTab = tab
       this.handleEvent('tab-change', tab)
       // if (tab === 'map') {
@@ -320,7 +384,7 @@ export default {
       //   })
       // }
     },
-    onClearForm () {
+    onClearForm() {
       // if (this.onModelUpdateHook && typeof this.onModelUpdateHook === 'function') {
       //   this.$nextTick(() => {
       //     this.onModelUpdateHook()
@@ -328,7 +392,7 @@ export default {
       // }
       this.handleEvent('clear-form')
     },
-    onSearchSubmit () {
+    onSearchSubmit() {
       // this.appliedFilters = JSON.parse(JSON.stringify(this.searchForm.model))
       // if (this.onSearchSubmitHook) {
       //   this.onSearchSubmitHook(this.appliedFilters)
@@ -338,135 +402,156 @@ export default {
       //   }
       //   this.page = 1
       // }
-      // this.fetchData()
+      this.fetchData()
       this.handleEvent('form-submit')
-    }
-    // async onModelUpdate (newVal, schema) {
-    //   // if (this.onModelUpdateHook && typeof this.onModelUpdateHook === 'function') {
-    //   //   this.onModelUpdateHook()
-    //   // } else {
-    //   //   this.page = 1
-    //   //   if (this.submitOnFormUpdate) {
-    //   //     this.fetchData()
-    //   //   }
-    //   // }
-    //   this.handleEvent('form-update', { value: newVal, field: schema })
-    // },
-    // async fetchData (showLoading = true) {
-    //   return false
-    //   // if (showLoading) {
-    //   //   this.loading = true
-    //   // }
-    //   // if (!this.results) {
-    //   //   let params = {}
-    //   //   if (this.serverSideFiltering) {
-    //   //     params = this.getRequestParams()
-    //   //   } else {
-    //   //     params.limit = 9999
-    //   //   }
+    },
+    async onModelUpdate (newVal, schema) {
+      // if (this.onModelUpdateHook && typeof this.onModelUpdateHook === 'function') {
+      //   this.onModelUpdateHook()
+      // } else {
+      //   this.page = 1
+      //   if (this.submitOnFormUpdate) {
+      //     this.fetchData()
+      //   }
+      // }
+      this.handleEvent('form-update', { value: newVal, field: schema })
+    },
+    async fetchData(showLoading = true) {
+      if (showLoading) {
+        this.loading = true
+      }
+      let params = {}
+      if (this.serverSideFiltering) {
+        params = this.getRequestParams()
+      } else {
+        params.limit = 9999
+      }
 
-    //   //   const BASE_URL = this.$nuxt.context.env
-    //   //   try {
-    //   //     const { data, status } = await this.$axios.get(`https://e9a0d0eb1a70d8af188eab7954371209.sdp2-b.elastic.sdp.vic.gov.au/elasticsearch_index_default_node/_search?q=title:Alexandra%20police%20station`, { params })
-    //   //     if (status === 200 && data && data.total > 0 && data.results && Array.isArray(data.results)) {
-    //   //       this.total = data.total
-    //   //       this.results = data.results
-    //   //       // if (this.serverSideFiltering && data.aggregations) {
-    //   //       //   this.aggs = data.aggregations
-    //   //       // }
-    //   //     }
-    //   //     // ChDataListingEventBus.$emit('fetch', { status: 'ok' })
-    //   //   } catch (error) {
-    //   //     this.results = []
-    //   //     this.total = 0
-    //   //     // ChDataListingEventBus.$emit('fetch', { status: 'error' })
-    //   //   }
-    //   // }
+      const BASE_URL = this.$nuxt.context.$tideSearchApi.baseUrl
+      try {
+        const { data, status } = await this.$axios.post(`${BASE_URL}/dsl`, {
+          "query": {
+            "bool": {
+              "must": [
+                {
+                  "match": {
+                    "type": "station"
+                  }
+                },
+                {
+                  "match": {
+                    "field_node_site": "4"
+                  }
+                }
+              ]
+            }
+          }
+        })
+        if (status === 200 && data && data.hits && data.hits.total && data.hits.total && data.hits.total.value && Array.isArray(data.hits.hits)) {
+          this.total = data.hits.total.value
+          this.stationLocatorProps.results = mapTableRows(data)
+        }
+        // ChDataListingEventBus.$emit('fetch', { status: 'ok' })
+      } catch (error) {
+        console.error(error)
+        this.stationLocatorProps.results = []
+        this.total = 0
+        // ChDataListingEventBus.$emit('fetch', { status: 'error' })
+      }
 
-    //   // // if (this.enableMap) {
-    //   // //   this.setMapData()
-    //   // // }
-    //   // // if (this.enableTable) {
-    //   // //   this.setTableData()
-    //   // // }
-    //   // if (showLoading) {
-    //   //   setTimeout(() => {
-    //   //     this.loading = false
-    //   //   }, 200)
-    //   // }
-    // },
+      // if (this.enableMap) {
+      //   this.setMapData()
+      // }
+      // if (this.enableTable) {
+      //   this.setTableData()
+      // }
+      if (showLoading) {
+        setTimeout(() => {
+          this.loading = false
+        }, 200)
+      }
+    },
   }
 }
 </script>
 
 <style lang="scss">
-  @import "~@dpc-sdp/ripple-global/scss/settings";
-  @import "~@dpc-sdp/ripple-global/scss/tools";
+@import "~@dpc-sdp/ripple-global/scss/settings";
+@import "~@dpc-sdp/ripple-global/scss/tools";
 
-  $vp-form-padding-mob: rem(20px);
-  $vp-form-padding-desk: $rpl-space-4;
-  $vp-form-element-spacing: $rpl-space-4;
+$vp-form-padding-mob: rem(20px);
+$vp-form-padding-desk: $rpl-space-4;
+$vp-form-element-spacing: $rpl-space-4;
 
-  .vp-station-locator {
-    &__form {
-      padding: $vp-form-padding-mob;
+.vp-station-locator {
+  &__form {
+    padding: $vp-form-padding-mob;
+
+    @include rpl_breakpoint('l') {
+      padding: $vp-form-padding-desk;
+      padding-top: rem(24px);
+      padding-bottom: $vp-form-padding-desk / 2;
+    }
+
+    background-color: #f5f5f8;
+    border-radius: $rpl-space;
+    margin-bottom: rem(75px);
+
+    fieldset {
+      margin: 0 0 ($vp-form-element-spacing / 2) 0;
+      display: flex;
+      flex-direction: column;
+
       @include rpl_breakpoint('l') {
-        padding: $vp-form-padding-desk;
-        padding-top: rem(24px);
-        padding-bottom: $vp-form-padding-desk / 2;
-      }
-      background-color: #f5f5f8;
-      border-radius: $rpl-space;
-      margin-bottom: rem(75px);
-      fieldset {
-        margin: 0 0 ($vp-form-element-spacing / 2) 0;
-        display: flex;
-        flex-direction: column;
-        @include rpl_breakpoint('l') {
-          flex-direction: row;
-          align-items: flex-start;
-          margin-left: -$vp-form-element-spacing / 2;
-          margin-right: -$vp-form-element-spacing / 2;
-        }
-      }
-      .vp-es-search-action,
-      [type=submit] {
-        width: 100%;
-      }
-      .form-group {
-        width: 100%;
-        flex: 1 1;
-        @include rpl_breakpoint('l') {
-          margin: 0 $vp-form-element-spacing / 2;
-        }
-        &--center {
-          width: auto;
-          margin: auto;
-          flex: none;
-        }
-        @include rpl_breakpoint_down('l') {
-          margin-bottom: rem(20px);
-        }
-        &:last-child {
-          margin-bottom: 0;
-        }
-      }
-
-      .rpl-select__trigger {
-        background-color: #fff;
-        border-color: #d7dbe0;
-      }
-
-      .rpl-select--open {
-        .rpl-select__trigger {
-          border-color: #274b93;
-        }
-      }
-
-      .rpl-checkbox__box {
-        background-color: #fff;
-        border-color: #d7dbe0;
+        flex-direction: row;
+        align-items: flex-start;
+        margin-left: -$vp-form-element-spacing / 2;
+        margin-right: -$vp-form-element-spacing / 2;
       }
     }
+
+    .vp-es-search-action,
+    [type=submit] {
+      width: 100%;
+    }
+
+    .form-group {
+      width: 100%;
+      flex: 1 1;
+
+      @include rpl_breakpoint('l') {
+        margin: 0 $vp-form-element-spacing / 2;
+      }
+
+      &--center {
+        width: auto;
+        margin: auto;
+        flex: none;
+      }
+
+      @include rpl_breakpoint_down('l') {
+        margin-bottom: rem(20px);
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    .rpl-select__trigger {
+      background-color: #fff;
+      border-color: #d7dbe0;
+    }
+
+    .rpl-select--open {
+      .rpl-select__trigger {
+        border-color: #274b93;
+      }
+    }
+
+    .rpl-checkbox__box {
+      background-color: #fff;
+      border-color: #d7dbe0;
+    }
   }
-</style>
+}</style>
