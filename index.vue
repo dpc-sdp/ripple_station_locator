@@ -6,10 +6,10 @@
     <rpl-tabs class="vp-station-locator__tabs" :tabs="tabs" :activeTab="activeTab" @rpl-tab-switch="switchTab" />
     <div class="vp-station-locator__map" v-if="activeTab === 'map'">Map view</div>
     <div class="vp-station-locator__list" v-if="activeTab === 'list'">
-      <rpl-search-results-layout v-bind="stationLocatorProps" :searchResults="stationLocatorProps.results" :count="total">
+      <rpl-search-results-layout :searchResults="stationLocatorProps.results" :count="total">
         <template v-slot:results="resultsProps">
-          <rpl-col cols="full" class="rpl-markup__table">
-            <rpl-search-results-table :columnConfig="stationLocatorProps.columns" :items="resultsProps.searchResults"></rpl-search-results-table>
+          <rpl-col cols="full">
+            <rpl-complex-data-table :columns="stationLocatorProps.columns" :items="resultsProps.searchResults"></rpl-complex-data-table>
           </rpl-col>
         </template>
         <template slot="noresults">
@@ -233,7 +233,7 @@ export default {
       stationLocatorProps: {
         enableMap: true,
         columns: [
-        {
+          {
             label: 'Suburb',
             key: 'suburb',
             component: () => import('./components/VpStationSuburb.vue')
@@ -536,7 +536,20 @@ $vp-form-element-spacing: $rpl-space-4;
       border-color: #d7dbe0;
     }
   }
+
   &__subheading {
     @include rpl_typography_font('xs', 1.25rem, 'bold');
   }
-}</style>
+
+  .rpl-complex-data-table {
+    @include rpl-breakpoint('l') {
+      table-layout: fixed;
+    }
+
+    &__value {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}
+</style>

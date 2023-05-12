@@ -2,7 +2,7 @@
   <div class="vp-station-location">
     <div class="vp-station-locator__subheading">{{ title }}</div>
     <div class="vp-station-location__address">
-      <div v-if="streetAddress">{{ streetAddress }},</div>
+      <div v-if="streetAddress">{{ streetAddress }}</div>
       <div>
         <span class="vp-station-location__suburb" v-if="suburb">{{ suburb }} </span>
         <span class="vp-station-location__state" v-if="state">{{ state }} </span>

@@ -34,6 +34,13 @@ export const mapTableRows = (data) => {
   if (data.hits && data.hits.hits) {
     return data.hits.hits.map(station => {
       const result = station._source
+      return [
+        stationSuburb(result),
+        stationLocation(result),
+        stationContact(result),
+        stationOpeningHours(result),
+        stationSpecialtyServices(result)
+      ];
       return {
         'suburb': stationSuburb(result),
         'location': stationLocation(result),
@@ -71,7 +78,17 @@ export const stationOpeningHours = (result) => {
 }
 
 export const stationContact = (result) => {
-  return {}
+  return {
+    phone: result.field_phone?.toString(),
+    fax: result.field_fax?.toString(),
+    email: result.field_email?.toString(),
+    puGeneralPhone: result.field_prosecution_unit_phone?.toString(),
+    puGeneralFax: result.field_prosecution_unit_fax?.toString(),
+    puGeneralEmail: result.field_prosecution_unit_email?.toString(),
+    puCcPhone: result.field_case_conference_phone?.toString(),
+    puCcEmail: result.field_case_conference_email?.toString(),
+    stationCode: result.field_station_code?.toString()
+  }
 }
 
 export const stationSpecialtyServices = (result) => {
