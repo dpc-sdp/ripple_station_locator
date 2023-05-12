@@ -1,30 +1,25 @@
 <template>
   <div class="vp-station-contact">
-    <div v-if="phone">Phone: <a class="vp-station-contact__link" :href="phone">{{ phoneLabel }}</a></div>
+    <div v-if="phone">Phone: <a class="vp-station-locator__link" :href="phone">{{ phoneLabel }}</a></div>
     <div v-if="fax">Fax: {{ fax }}</div>
-    <div v-if="email">Email: <a class="vp-station-contact__link vp-station-contact__email" :href="email">{{ emailLabel }}</a></div>
+    <div v-if="email">Email: <a class="vp-station-locator__link vp-station-locator__email" :href="email">{{ emailLabel }}</a></div>
     <div v-if="stationCode">Station code: {{ stationCode }}</div>
-    <div class="vp-station-locator__subheading" v-if="puGeneralPhone || puGeneralFax || puGeneralEmail">Prosecution Unit - General</div>
-    <div v-if="puGeneralPhone">Phone: <a class="vp-station-contact__link" :href="puGeneralPhone">{{ puGeneralPhoneLabel }}</a></div>
-    <div v-if="puGeneralFax">Fax: {{ puGeneralFax }}</div>
-    <div v-if="puGeneralEmail">Email: <a class="vp-station-contact__link vp-station-contact__email" :href="puGeneralEmail">{{ puGeneralEmailLabel }}</a></div>
-    <div class="vp-station-locator__subheading" v-if="puCcPhone || puCcEmail">Prosecution Unit - Case conference</div>
-    <div v-if="puCcPhone">Phone: <a class="vp-station-contact__link" :href="puCcPhone">{{ puCcPhoneLabel }}</a></div>
-    <div v-if="puCcEmail">Email: <a class="vp-station-contact__link vp-station-contact__email" :href="puCcEmail">{{ puCcEmailLabel }}</a></div>
+    <vp-station-prosecution-unit-details :prosecutionUnit="prosecutionUnit"></vp-station-prosecution-unit-details>
   </div>
 </template>
 
 <script>
+import VpStationProsecutionUnitDetails from './VpStationProsecutionUnitDetails.vue';
+
 export default {
+  components: {
+    VpStationProsecutionUnitDetails
+  },
   props: {
     phone: String,
     fax: String,
     email: String,
-    puGeneralPhone: String,
-    puGeneralFax: String,
-    puGeneralEmail: String,
-    puCcPhone: String,
-    puCcEmail: String,
+    prosecutionUnit: Object,
     stationCode: String
   },
   computed: {
@@ -34,18 +29,6 @@ export default {
     emailLabel () {
       return this.email?.replace('mailto:', '')
     },
-    puGeneralPhoneLabel () {
-      return this.puGeneralPhone?.replace('tel:', '')
-    },
-    puGeneralEmailLabel () {
-      return this.puGeneralEmail?.replace('mailto:', '')
-    },
-    puCcPhoneLabel () {
-      return this.puCcPhone?.replace('tel:', '')
-    },
-    puCcEmailLabel () {
-      return this.puCcEmail?.replace('mailto:', '')
-    }
   },
 }
 </script>
@@ -58,16 +41,12 @@ export default {
   .vp-station-locator__subheading {
     margin-top: rem(12px);
   }
-  &__link {
-    color: rpl-color('extra_dark_neutral');
-    text-decoration: underline;
+  &__prosecution-unit {
+    display: none;
 
-    &:hover {
-      text-decoration: none;
+    @include rpl_breakpoint('l') {
+      display: block;
     }
-  }
-  &__email {
-    word-break: break-all;
   }
 }
 </style>

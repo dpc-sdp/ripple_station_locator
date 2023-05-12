@@ -541,6 +541,19 @@ $vp-form-element-spacing: $rpl-space-4;
     @include rpl_typography_font('xs', 1.25rem, 'bold');
   }
 
+  &__link {
+    color: rpl-color('extra_dark_neutral');
+    text-decoration: underline;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  &__email {
+    word-break: break-all;
+  }
+
   .rpl-complex-data-table {
     @include rpl-breakpoint('l') {
       table-layout: fixed;

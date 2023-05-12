@@ -1,13 +1,25 @@
 <template>
-  <ul class="vp-station-specialty-services" v-if="services">
-    <li class="vp-station-specialty-services__item" v-for="service in services">{{ service }}</li>
-  </ul>
+  <div class="vp-station-specialty-services">
+    <vp-station-list :items="services"></vp-station-list>
+    <vp-station-list :items="accessibility" title="Accessibility" class="vp-station-specialty-services__accessibility"></vp-station-list>
+    <vp-station-prosecution-unit-details :prosecutionUnit="prosecutionUnit" class="vp-station-specialty-services__prosecution-unit"></vp-station-prosecution-unit-details>
+  </div>
 </template>
 
 <script>
+import VpStationList from './VpStationList.vue';
+import VpStationProsecutionUnitDetails from './VpStationProsecutionUnitDetails.vue';
+
 export default {
+  components: {
+    VpStationList,
+    VpStationProsecutionUnitDetails
+  },
   props: {
-    services: Array
+    services: Array,
+    // For mobile display.
+    prosecutionUnit: Object, 
+    accessibility: Array
   }
 }
 </script>
@@ -17,14 +29,15 @@ export default {
 @import "~@dpc-sdp/ripple-global/scss/tools";
 
 .vp-station-specialty-services {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-
-  &__item {
-    font-size: rpl-font-size(xs);
-    line-height: rem(20px);
-    margin-bottom: rem(6px);
+  &__prosecution-unit {
+    @include rpl_breakpoint('l') {
+      display: none;
+    }
+  }
+  &__accessibility {
+    @include rpl_breakpoint('l') {
+      display: none;
+    }
   }
 }
 </style>

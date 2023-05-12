@@ -10,10 +10,7 @@
       </div>
     </div>
     <div class="vp-station-location__accessibility" v-if="accessibility">
-      <div class="vp-station-locator__subheading">Accessibility</div>
-      <ul class="vp-station-location__list">
-        <li class="vp-station-location__list-item" v-for="item in accessibility">{{ item }}</li>
-      </ul>
+      <vp-station-list :items="accessibility" title="Accessibility"></vp-station-list>
     </div>
 
   </div>
@@ -21,10 +18,12 @@
 
 <script>
 import { RplLink } from '@dpc-sdp/ripple-link';
+import VpStationList from './VpStationList.vue';
 
 export default {
   components: {
-    RplLink
+    RplLink,
+    VpStationList
   },
   props: {
     accessibility: Array,
@@ -46,19 +45,10 @@ export default {
   line-height: rem(20px);
 
   &__accessibility {
-    margin-top: $rpl-space-4;
+    display: none;
 
-    .vp-station-locator__subheading {
-      margin-bottom: rem(6px);
-    }
-  }
-  &__list {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-
-    &-item {
-      margin-bottom: rem(6px);
+    @include rpl_breakpoint('l') {
+      display: block;
     }
   }
 }
