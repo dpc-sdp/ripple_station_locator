@@ -54,6 +54,11 @@ export const stationSuburb = (result) => {
 
 export const stationLocation = (result) => {
   return {
+    'title': result.title?.toString(),
+    'streetAddress': result.field_street_address?.toString(),
+    'suburb': result.field_suburb?.toString(),
+    'state': result.field_state_name?.toString(),
+    'postcode': result.field_postcode?.toString(),
     'accessibility': result.field_accessibility_name
   }
 }

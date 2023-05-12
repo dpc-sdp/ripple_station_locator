@@ -13,7 +13,7 @@
           </rpl-col>
         </template>
         <template slot="noresults">
-          <div class="ch-data-listing__no-results">
+          <div class="vp-station-locator__no-results">
             <slot name="noresults">
               <h3>Sorry, no police stations match your search.</h3>
               <p>Try again with different search criteria.</p>
@@ -535,5 +535,8 @@ $vp-form-element-spacing: $rpl-space-4;
       background-color: #fff;
       border-color: #d7dbe0;
     }
+  }
+  &__subheading {
+    @include rpl_typography_font('xs', 1.25rem, 'bold');
   }
 }</style>
