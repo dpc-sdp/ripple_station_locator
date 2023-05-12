@@ -240,42 +240,24 @@ export default {
           },
           {
             label: 'Location',
-            key: 'location'
+            key: 'location',
+            component: () => import('./components/VpStationLocation.vue')
           },
           {
             label: 'Contact',
-            key: 'contact'
+            key: 'contact',
+            component: () => import('./components/VpStationContact.vue')
           },
           {
             label: 'Opening hours',
-            key: 'opening_hours'
+            key: 'opening_hours',
+            component: () => import('./components/VpStationOpeningHours.vue')
           },
           {
             label: 'Specialty service or facility',
             key: 'specialty_services',
             component: () => import('./components/VpStationSpecialtyServices.vue')
           },
-          // 'Suburb',
-          // 'Location',
-          // 'Contact',
-          // 'Opening hours',
-          // 'Specialty service or facility'
-          // {
-          //   label: 'Location',
-          //   component: () => import('./components/VpStationLocation.vue')
-          // },
-          // {
-          //   label: 'Contact',
-          //   component: () => import('./components/VpStationContact.vue')
-          // },
-          // {
-          //   label: 'Opening hours',
-          //   component: () => import('./components/VpStationOpeningHours.vue')
-          // },
-          // {
-          //   label: 'Specialty service or facility',
-          //   component: () => import('./components/VpStationSpecialtyServices.vue')
-          // }
         ],
         results: [],
         items: [

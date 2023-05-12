@@ -53,11 +53,16 @@ export const stationSuburb = (result) => {
 }
 
 export const stationLocation = (result) => {
-  return {}
+  return {
+    'accessibility': result.field_accessibility_name
+  }
 }
 
 export const stationOpeningHours = (result) => {
-  return {}
+  return {
+    'openingHours': result.field_opening_hours?.toString(),
+    'openingHoursNotice': result.field_opening_hours_notice?.toString()
+  }
 }
 
 export const stationContact = (result) => {
@@ -66,6 +71,7 @@ export const stationContact = (result) => {
 
 export const stationSpecialtyServices = (result) => {
   return {
-    'services': result.field_specialty_services_or_faci_name
+    'services': result.field_specialty_services_or_faci_name,
+    'accessibility': result.field_accessibility_name
   }
 }
