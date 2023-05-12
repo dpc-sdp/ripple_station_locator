@@ -41,6 +41,10 @@ export default {
 .vp-station-contact {
   .vp-station-locator__subheading {
     margin-top: rem(12px);
+
+    &--mobile {
+      margin-top: 0;
+    }
   }
 
   &__prosecution-unit {

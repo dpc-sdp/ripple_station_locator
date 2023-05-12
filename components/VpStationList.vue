@@ -36,6 +36,10 @@ export default {
 
     &-item {
       margin-bottom: rem(6px);
+
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
   }
 }

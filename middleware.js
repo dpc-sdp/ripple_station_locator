@@ -27,6 +27,7 @@ export const stationLocation = (result) => {
     suburb: result.field_suburb?.toString(),
     state: result.field_state_name?.toString(),
     postcode: result.field_postcode?.toString(),
+    latLng: result.field_geolocation_latlon?.toString(),
     accessibility: result.field_accessibility_name
   }
 }
