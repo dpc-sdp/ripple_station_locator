@@ -4,7 +4,7 @@
     <div v-if="fax">Fax: {{ fax }}</div>
     <div v-if="email">Email: <a class="vp-station-locator__link vp-station-locator__email" :href="email">{{ emailLabel }}</a></div>
     <div v-if="stationCode">Station code: {{ stationCode }}</div>
-    <vp-station-prosecution-unit-details :prosecutionUnit="prosecutionUnit"></vp-station-prosecution-unit-details>
+    <vp-station-prosecution-unit-details :prosecutionUnit="prosecutionUnit" class="vp-station-contact__prosecution-unit"></vp-station-prosecution-unit-details>
   </div>
 </template>
 
@@ -41,6 +41,7 @@ export default {
   .vp-station-locator__subheading {
     margin-top: rem(12px);
   }
+
   &__prosecution-unit {
     display: none;
 
