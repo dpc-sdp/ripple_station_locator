@@ -1,6 +1,6 @@
 <template>
   <div class="vp-station-list">
-    <div class="vp-station-locator__subheading vp-station-list__title" v-if="title">{{ title }}</div>
+    <div class="vp-station-locator__subheading vp-station-list__title" v-if="title && items">{{ title }}</div>
     <ul class="vp-station-list__list" v-if="items">
       <li class="vp-station-list__list-item" v-for="item, key in items" :key="key">{{ item }}</li>
     </ul>

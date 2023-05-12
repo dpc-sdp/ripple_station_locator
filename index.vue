@@ -539,6 +539,14 @@ $vp-form-element-spacing: $rpl-space-4;
 
   &__subheading {
     @include rpl_typography_font('xs', 1.25rem, 'bold');
+
+    &--mobile {
+      display: block;
+
+      @include rpl-breakpoint('l') {
+        display: none;
+      }
+    }
   }
 
   &__link {
@@ -562,6 +570,10 @@ $vp-form-element-spacing: $rpl-space-4;
     &__value {
       display: flex;
       flex-direction: column;
+    }
+
+    &__label {
+      display: none;
     }
   }
 }

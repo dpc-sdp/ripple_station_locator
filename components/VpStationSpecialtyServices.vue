@@ -1,5 +1,6 @@
 <template>
   <div class="vp-station-specialty-services">
+    <div class="vp-station-locator__subheading vp-station-locator__subheading--mobile" v-if="services">Specialty service or facility</div>
     <vp-station-list :items="services"></vp-station-list>
     <vp-station-list :items="accessibility" title="Accessibility" class="vp-station-specialty-services__accessibility"></vp-station-list>
     <vp-station-prosecution-unit-details :prosecutionUnit="prosecutionUnit" class="vp-station-specialty-services__prosecution-unit"></vp-station-prosecution-unit-details>

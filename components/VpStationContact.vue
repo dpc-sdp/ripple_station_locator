@@ -1,5 +1,6 @@
 <template>
   <div class="vp-station-contact">
+    <div class="vp-station-locator__subheading vp-station-locator__subheading--mobile">Contact</div>
     <div v-if="phone">Phone: <a class="vp-station-locator__link" :href="phone">{{ phoneLabel }}</a></div>
     <div v-if="fax">Fax: {{ fax }}</div>
     <div v-if="email">Email: <a class="vp-station-locator__link vp-station-locator__email" :href="email">{{ emailLabel }}</a></div>
