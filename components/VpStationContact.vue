@@ -11,6 +11,7 @@
 
 <script>
 import VpStationProsecutionUnitDetails from './VpStationProsecutionUnitDetails.vue';
+import {formatEmailLabel, formatPhoneLabel} from '../utils'
 
 export default {
   components: {
@@ -25,10 +26,10 @@ export default {
   },
   computed: {
     phoneLabel () {
-      return this.phone?.replace('tel:', '')
+      return formatPhoneLabel(this.phone)
     },
     emailLabel () {
-      return this.email?.replace('mailto:', '')
+      return formatEmailLabel(this.email)
     },
   },
 }

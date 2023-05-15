@@ -15,7 +15,7 @@
         <template slot="noresults">
           <div class="vp-station-locator__no-results">
             <slot name="noresults">
-              <h3>Sorry, no police stations match your search.</h3>
+              <h3 class="vp-station-locator__no-results__heading">Sorry, no police stations match your search.</h3>
               <p>Try again with different search criteria.</p>
             </slot>
           </div>
@@ -411,7 +411,7 @@ export default {
 
       const BASE_URL = this.$nuxt.context.$tideSearchApi.baseUrl
       try {
-        const { data, status } = await this.$axios.post(`${BASE_URL}/dsl`, {
+        const { data, status } = await this.$axios.post(`${BASE_URL}dsl`, {
           "query": {
             "bool": {
               "must": [
@@ -433,20 +433,12 @@ export default {
           this.total = data.hits.total.value
           this.stationLocatorProps.results = mapTableRows(data)
         }
-        // ChDataListingEventBus.$emit('fetch', { status: 'ok' })
       } catch (error) {
         console.error(error)
         this.stationLocatorProps.results = []
         this.total = 0
-        // ChDataListingEventBus.$emit('fetch', { status: 'error' })
       }
 
-      // if (this.enableMap) {
-      //   this.setMapData()
-      // }
-      // if (this.enableTable) {
-      //   this.setTableData()
-      // }
       if (showLoading) {
         setTimeout(() => {
           this.loading = false
@@ -574,6 +566,17 @@ $vp-form-element-spacing: $rpl-space-4;
 
     &__label {
       display: none;
+    }
+  }
+
+  &__no-results {
+    &__heading {
+      margin-bottom: rem(10px);
+    }
+    p {
+      @include rpl_typography_font('l', 1.6875rem, 'regular');
+
+      margin-top: 0;
     }
   }
 }

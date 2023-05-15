@@ -11,22 +11,24 @@
 </template>
 
 <script>
+import {formatEmailLabel, formatPhoneLabel} from '../utils'
+
 export default {
   props: {
     prosecutionUnit: Object,
   },
   computed: {
     puGeneralPhoneLabel () {
-      return this.prosecutionUnit.puGeneralPhone?.replace('tel:', '')
+      return formatPhoneLabel(this.prosecutionUnit.puGeneralPhone)
     },
     puGeneralEmailLabel () {
-      return this.prosecutionUnit.puGeneralEmail?.replace('mailto:', '')
+      return formatEmailLabel(this.prosecutionUnit.puGeneralEmail)
     },
     puCcPhoneLabel () {
-      return this.prosecutionUnit.puCcPhone?.replace('tel:', '')
+      return formatPhoneLabel(this.prosecutionUnit.puCcPhone)
     },
     puCcEmailLabel () {
-      return this.prosecutionUnit.puCcEmail?.replace('mailto:', '')
+      return formatEmailLabel(this.prosecutionUnit.puCcEmail)
     }
   },
 }

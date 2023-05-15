@@ -13,14 +13,16 @@ export const mapTableRows = (data) => {
   }
 }
 
-export const stationSuburb = (result) => {
+// Map station data for the Suburb column.
+const stationSuburb = (result) => {
   return {
     suburb: result.field_suburb.toString(),
     url: result.url.toString()
   }
 }
 
-export const stationLocation = (result) => {
+// Map station data for the Location column.
+const stationLocation = (result) => {
   return {
     title: result.title?.toString(),
     streetAddress: result.field_street_address?.toString(),
@@ -32,7 +34,8 @@ export const stationLocation = (result) => {
   }
 }
 
-export const stationContact = (result) => {
+// Map station data for the Contact column.
+const stationContact = (result) => {
   return {
     phone: result.field_phone?.toString(),
     fax: result.field_fax?.toString(),
@@ -48,16 +51,18 @@ export const stationContact = (result) => {
   }
 }
 
-export const stationOpeningHours = (result) => {
+// Map station data for the Opening Hours column.
+const stationOpeningHours = (result) => {
   return {
     openingHours: result.field_opening_hours?.toString(),
     openingHoursNotice: result.field_opening_hours_notice?.toString()
   }
 }
 
-export const stationSpecialtyServices = (result) => {
+// Map station data for the Specialty column.
+const stationSpecialtyServices = (result) => {
   return {
-    services: result.field_specialty_services_or_faci_name,
+    services: result.field_specialty_services_or_faci_name?.sort(),
     // For mobile display.
     accessibility: result.field_accessibility_name,
     prosecutionUnit: {
