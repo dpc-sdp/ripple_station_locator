@@ -1,12 +1,14 @@
 <template>
   <div class="vp-station-locator">
+    <div class="vp-station-locator__form" ref="searchForm">
     <rpl-form :formData="searchForm" class="vp-station-locator__form" :submitHandler="onSearchSubmit"
       :submitFormOnClear="true" :scrollToMessage="false"></rpl-form>
+    </div>
 
     <rpl-tabs class="vp-station-locator__tabs" :tabs="tabs" :activeTab="activeTab" @rpl-tab-switch="switchTab" />
     <div class="vp-station-locator__map" v-if="activeTab === 'map'">Map view</div>
     <div class="vp-station-locator__list" v-if="activeTab === 'list'">
-      <rpl-search-results-layout :searchResults="stationLocatorProps.results" :count="total">
+      <rpl-search-results-layout :searchResults="stationLocatorProps.results" :pager="pager" :count="total" @pager-change="getPaginatedResults" :loading="loading" v-if="!loading">
         <template v-slot:results="resultsProps">
           <rpl-col cols="full">
             <rpl-complex-data-table :columns="stationLocatorProps.columns" :items="resultsProps.searchResults"></rpl-complex-data-table>
@@ -16,7 +18,7 @@
           <div class="vp-station-locator__no-results">
             <slot name="noresults">
               <h3 class="vp-station-locator__no-results__heading">Sorry, no police stations match your search.</h3>
-              <p>Try again with different search criteria.</p>
+              <p class="vp-station-locator__no-results__supporting-text">Try again with different search criteria.</p>
             </slot>
           </div>
         </template>
@@ -31,7 +33,8 @@ import { RplComplexDataTable } from '@dpc-sdp/ripple-data-table'
 import { RplForm, RplFormEventBus } from '@dpc-sdp/ripple-form'
 import { RplSearchResultsLayout, RplSearchResultsTable } from '@dpc-sdp/ripple-search'
 import RplTabs from '@dpc-sdp/ripple-tabs/Tabs.vue'
-import { mapTableRows } from './middleware.js'
+import { mapTableRows } from './middleware'
+import { config } from './config'
 
 export default {
   name: 'RplStationLocator',
@@ -61,6 +64,13 @@ export default {
       total: 0,
       distance: [5, 100],
       specialtyservices: [],
+      store: [],
+      loading: false,
+      pager: {
+        totalSteps: 0,
+        initialStep: 1,
+        stepsAround: 2
+      },
       open24hours: false,
       searchForm: {
         model: {
@@ -91,100 +101,7 @@ export default {
                 // },
                 {
                   type: 'rplselect',
-                  values: [
-                    {
-                      id: 'Crime Investigations Unit (CIU)',
-                      name: 'Crime Investigations Unit (CIU)'
-                    },
-                    {
-                      id: 'Crime Prevention Officer (CPO)',
-                      name: 'Crime Prevention Officer (CPO)'
-                    },
-                    {
-                      id: 'Crime Scene Services (CSS)',
-                      name: 'Crime Scene Services (CSS)'
-                    },
-                    {
-                      id: 'Divisional Intilligence Unit (DIU)',
-                      name: 'Divisional Intilligence Unit (DIU)'
-                    },
-                    {
-                      id: 'Family Violence Investigations Unit (FVIU)',
-                      name: 'Family Violence Investigations Unit (FVIU)'
-                    },
-                    {
-                      id: 'Family Violence Liaison Officer (FVLO)',
-                      name: 'Family Violence Liaison Officer (FVLO)'
-                    },
-                    {
-                      id: 'Farm Crime Liaison Officer (FCLO)',
-                      name: 'Farm Crime Liaison Officer (FCLO)'
-                    },
-                    {
-                      id: 'Fingerprint office',
-                      name: 'Fingerprint office'
-                    },
-                    {
-                      id: 'Highway Patrol (HWP)',
-                      name: 'Highway Patrol (HWP)'
-                    },
-                    {
-                      id: 'Justice of the Peace',
-                      name: 'Justice of the Peace'
-                    },
-                    {
-                      id: 'LGBTIQ+ Liaison Officer (LLO)',
-                      name: 'LGBTIQ+ Liaison Officer (LLO)'
-                    },
-                    {
-                      id: 'Neighbourhood Watch',
-                      name: 'Neighbourhood Watch'
-                    },
-                    {
-                      id: 'Pro-active Policing Unit (PPU)',
-                      name: 'Pro-active Policing Unit (PPU)'
-                    },
-                    {
-                      id: 'Prosecutions Unit',
-                      name: 'Prosecutions Unit'
-                    },
-                    {
-                      id: 'Protective services officers (PSO)',
-                      name: 'Protective services officers (PSO)'
-                    },
-                    {
-                      id: 'Regional Firearms Officers',
-                      name: 'Regional Firearms Officers'
-                    },
-                    {
-                      id: 'Regional Response Unit',
-                      name: 'Regional Response Unit'
-                    },
-                    {
-                      id: 'Registered Sex Offenders Management Unit',
-                      name: 'Registered Sex Offenders Management Unit'
-                    },
-                    {
-                      id: 'Sexual Offences and Child Abuse Investigation Team (SOCIT)',
-                      name: 'Sexual Offences and Child Abuse Investigation Team (SOCIT)'
-                    },
-                    {
-                      id: 'Traffic Management Unit (TMU)',
-                      name: 'Traffic Management Unit (TMU)'
-                    },
-                    {
-                      id: 'Victim Assistance Support Officers',
-                      name: 'Victim Assistance Support Officers'
-                    },
-                    {
-                      id: 'Water Police Search and Rescue Squad',
-                      name: 'Water Police Search and Rescue Squad'
-                    },
-                    {
-                      id: 'Youth Resource Officer',
-                      name: 'Youth Resource Officer'
-                    }
-                  ],
+                  values: config.SPECIALTY_SERVICE_OPTIONS,
                   multiselect: true,
                   label: 'Specialty services or facilities',
                   placeholder: 'Select service/facility',
@@ -260,39 +177,6 @@ export default {
           },
         ],
         results: [],
-        items: [
-          {
-            'suburb': {
-              'suburb': 'Dandenong',
-              'test': 'Green hat'
-            },
-            'location': 'Dandenong Police Station',
-            'opening_hours': 'Non-24 Hours',
-            'contact': 'eildon.uni@police.vic.gov.au',
-            'specialty_services': 'Blah'
-          },
-          {
-            'suburb': 'Dandenong',
-            'location': 'Dandenong Police Station',
-            'opening_hours': 'Non-24 Hours',
-            'contact': 'eildon.uni@police.vic.gov.au',
-            'specialty_services': 'Blah'
-          },
-          {
-            'suburb': 'Dandenong',
-            'location': 'Dandenong Police Station',
-            'opening_hours': 'Non-24 Hours',
-            'contact': 'eildon.uni@police.vic.gov.au',
-            'specialty_services': 'Blah'
-          },
-          {
-            'suburb': 'Dandenong',
-            'location': 'Dandenong Police Station',
-            'opening_hours': 'Non-24 Hours',
-            'contact': 'eildon.uni@police.vic.gov.au',
-            'specialty_services': 'Blah'
-          }
-        ],
         sortOptions: [
           {
             id: 'Suburb',
@@ -308,42 +192,6 @@ export default {
           }
         ],
         submitOnFormUpdate: true,
-        // tableResultsMiddleware: [
-        //   advancedSearchFilters,
-        //   filterByOpen,
-        //   customSort,
-        //   sortByDistance,
-        //   pagination,
-        //   mapTableRows
-        // ],
-        // mapResultsMiddleware: [advancedSearchFilters, filterByOpen],
-        // onModelUpdateHook: async function () {
-        //   const suburb = this.getModelValue('suburb', this.searchForm.model)
-        //   if (suburb && suburb.hasOwnProperty('id')) {
-        //     const { lat, lng } = await getSuburbLatLong(suburb)
-        //     if (lat && lng) {
-        //       this.searchForm.model.suburb.lat = lat
-        //       this.searchForm.model.suburb.lng = lng
-        //     }
-        //     const distanceSortOpt = {
-        //       id: 'sortByDistance',
-        //       name: 'Shortest distance'
-        //     }
-        //     this.sortValues = [distanceSortOpt, ...this.sortOptions]
-        //     this.sort = 'sortByDistance'
-        //     this.page = 1
-        //     if (this.submitOnFormUpdate) {
-        //       this.fetchData()
-        //     }
-        //   } else {
-        //     this.sortValues = [ ...this.sortOptions]
-        //     this.sort = this.sortOptions[0].id
-        //     this.page = 1
-        //     if (this.submitOnFormUpdate) {
-        //       this.fetchData()
-        //     }
-        //   }
-        // },
       }
     }
   },
@@ -360,42 +208,36 @@ export default {
     switchTab(tab) {
       this.activeTab = tab
       this.handleEvent('tab-change', tab)
-      // if (tab === 'map') {
-      //   this.$nextTick(() => {
-      //     this.mapInstance.updateSize()
-      //   })
-      // }
     },
     onClearForm() {
-      // if (this.onModelUpdateHook && typeof this.onModelUpdateHook === 'function') {
-      //   this.$nextTick(() => {
-      //     this.onModelUpdateHook()
-      //   })
-      // }
       this.handleEvent('clear-form')
     },
     onSearchSubmit() {
-      // this.appliedFilters = JSON.parse(JSON.stringify(this.searchForm.model))
-      // if (this.onSearchSubmitHook) {
-      //   this.onSearchSubmitHook(this.appliedFilters)
-      // } else {
-      //   if (this.$refs.searchresults) {
-      //     VueScrollTo.scrollTo(this.$refs.searchresults.$el, 500, { offset: -50 })
-      //   }
-      //   this.page = 1
-      // }
       this.fetchData()
       this.handleEvent('form-submit')
     },
+    getPaginatedResults (paginationStepChangedEvent) {
+      this.loading = true
+      if (!paginationStepChangedEvent) {
+        // Initial page load, set up defaults
+        this.pager.initialStep = 1
+        // this.commitSearchOptions()
+      } else {
+        // Pagination component was clicked
+        this.scrollToTop()
+        this.pager.initialStep = paginationStepChangedEvent
+      }
+      let resultSet = this.doSort
+      resultSet = this.doFilter
+      this.total = resultSet.length ? resultSet.length : 0
+
+      this.pager.totalSteps = Math.ceil(resultSet.length / config.RESULTS_PER_PAGE)
+      let beginning = (this.pager.initialStep === 1) ? 0 : ((this.pager.initialStep - 1) * config.RESULTS_PER_PAGE)
+      let end = beginning + config.RESULTS_PER_PAGE
+      this.stationLocatorProps.results = mapTableRows(resultSet.slice(beginning, end))
+      this.loading = false
+    },
     async onModelUpdate (newVal, schema) {
-      // if (this.onModelUpdateHook && typeof this.onModelUpdateHook === 'function') {
-      //   this.onModelUpdateHook()
-      // } else {
-      //   this.page = 1
-      //   if (this.submitOnFormUpdate) {
-      //     this.fetchData()
-      //   }
-      // }
       this.handleEvent('form-update', { value: newVal, field: schema })
     },
     async fetchData(showLoading = true) {
@@ -427,15 +269,20 @@ export default {
                 }
               ]
             }
-          }
+          },
+          "size": params.limit
         })
         if (status === 200 && data && data.hits && data.hits.total && data.hits.total && data.hits.total.value && Array.isArray(data.hits.hits)) {
-          this.total = data.hits.total.value
-          this.stationLocatorProps.results = mapTableRows(data)
+          // this.total = data.hits.total.value
+          // this.pager.totalSteps = Math.ceil(this.total / config.RESULTS_PER_PAGE)
+          this.store = data.hits.hits
+          if (data.hits.total.value) {
+            this.getPaginatedResults()
+          }
         }
       } catch (error) {
         console.error(error)
-        this.stationLocatorProps.results = []
+        this.store = []
         this.total = 0
       }
 
@@ -445,6 +292,17 @@ export default {
         }, 200)
       }
     },
+    scrollToTop () {
+      this.$refs.searchForm.scrollIntoView({behavior: 'smooth'})
+    }
+  },
+  computed: {
+    doFilter () {
+      return this.store
+    },
+    doSort () {
+      return this.store
+    }
   }
 }
 </script>
@@ -573,7 +431,7 @@ $vp-form-element-spacing: $rpl-space-4;
     &__heading {
       margin-bottom: rem(10px);
     }
-    p {
+    &__supporting-text {
       @include rpl_typography_font('l', 1.6875rem, 'regular');
 
       margin-top: 0;

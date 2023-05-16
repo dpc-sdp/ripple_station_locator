@@ -1,6 +1,6 @@
-export const mapTableRows = (data) => {
-  if (data.hits && data.hits.hits) {
-    return data.hits.hits.map(station => {
+export const mapTableRows = (results) => {
+  if (results) {
+    return results.map(station => {
       const result = station._source
       return [
         stationSuburb(result),
