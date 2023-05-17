@@ -78,7 +78,6 @@ export default {
       store: [],
       loading: true,
       sort: 'Suburb',
-      hasLocation: false,
       pager: {
         totalSteps: 0,
         initialStep: 1,
@@ -90,6 +89,7 @@ export default {
           distance: [5, 100],
           specialtyServices: [],
           open24Hours: false,
+          location: null
         },
         schema: {
           groups: [
@@ -245,7 +245,9 @@ export default {
       let beginning = (this.pager.initialStep === 1) ? 0 : ((this.pager.initialStep - 1) * config.RESULTS_PER_PAGE)
       let end = beginning + config.RESULTS_PER_PAGE
       this.stationLocatorProps.results = mapTableRows(resultSet.slice(beginning, end))
-      this.loading = false
+      setTimeout(() => {
+        this.loading = false
+      }, 200)
     },
     async onModelUpdate (newVal, schema) {
       this.handleEvent('form-update', { value: newVal, field: schema })
@@ -308,10 +310,8 @@ export default {
       this.sort = value
       this.$refs.sortselect.close()
       this.getPaginatedResults()
-      this.loading = true
       this.$nextTick(() => {
         setTimeout(() => {
-          this.loading = false
           this.$refs.sortselect.$el.querySelector('[role="button"]').focus()
         }, 210)
       })
@@ -327,7 +327,7 @@ export default {
         case 'Suburb':
           return sortBySuburb(this.store);
         case 'Location':
-          return sortByLocation(this.store, this.location);
+          return sortByLocation(this.store, this.searchForm.model.location);
         case 'Distance':
           return sortByDistance(this.store);
         default:
@@ -335,7 +335,7 @@ export default {
       }
     },
     sortValues () {
-      return [
+      let values = [
         {
           id: 'Suburb',
           name: 'A-Z by suburb'
@@ -343,12 +343,15 @@ export default {
         {
           id: 'Location',
           name: 'A-Z by location'
-        },
-        {
-          id: 'Distance',
-          name: 'Distance'
         }
       ]
+      if (this.searchForm.model.location) {
+        values.push({
+          id: 'Distance',
+          name: 'Distance'
+        })
+      }
+      return values
     }
   }
 }
