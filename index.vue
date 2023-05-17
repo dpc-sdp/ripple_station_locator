@@ -1,18 +1,26 @@
 <template>
   <div class="vp-station-locator">
-    <div class="vp-station-locator__form" ref="searchForm">
+    <div class="vp-station-locator__form-container" ref="searchForm">
     <rpl-form :formData="searchForm" class="vp-station-locator__form" :submitHandler="onSearchSubmit"
       :submitFormOnClear="true" :scrollToMessage="false"></rpl-form>
     </div>
-
     <rpl-tabs class="vp-station-locator__tabs" :tabs="tabs" :activeTab="activeTab" @rpl-tab-switch="switchTab" />
     <div class="vp-station-locator__map" v-if="activeTab === 'map'">Map view</div>
     <div class="vp-station-locator__list" v-if="activeTab === 'list'">
+      <rpl-search-results-loading v-if="loading" />
       <rpl-search-results-layout :searchResults="stationLocatorProps.results" :pager="pager" :count="total" @pager-change="getPaginatedResults" :loading="loading" v-if="!loading">
         <template v-slot:results="resultsProps">
           <rpl-col cols="full">
             <rpl-complex-data-table :columns="stationLocatorProps.columns" :items="resultsProps.searchResults"></rpl-complex-data-table>
           </rpl-col>
+        </template>
+        <template slot="sort">
+          <div v-if="total > 0" class="vp-station-locator__sort">
+            <label for="vp-sort-select">
+              <span class="rpl-form-label">Sort by:</span>
+            </label>
+            <rpl-select ref="sortselect" id="vp-sort-select" class="vp-station-locator__sort-select" :values="sortValues" :state="sort" @rpl-select-update="sortUpdate"/>
+          </div>
         </template>
         <template slot="noresults">
           <div class="vp-station-locator__no-results">
@@ -31,9 +39,11 @@
 import { RplCol } from '@dpc-sdp/ripple-grid'
 import { RplComplexDataTable } from '@dpc-sdp/ripple-data-table'
 import { RplForm, RplFormEventBus } from '@dpc-sdp/ripple-form'
-import { RplSearchResultsLayout, RplSearchResultsTable } from '@dpc-sdp/ripple-search'
+import RplSelect from '@dpc-sdp/ripple-form/Select'
+import { RplSearchForm, RplSearchResultsLayout, RplSearchResultsTable } from '@dpc-sdp/ripple-search'
+import RplSearchResultsLoading from './components/RplSearchResultsLoading';
 import RplTabs from '@dpc-sdp/ripple-tabs/Tabs.vue'
-import { mapTableRows } from './middleware'
+import { mapTableRows, sortByDistance, sortByLocation, sortBySuburb } from './middleware'
 import { config } from './config'
 
 export default {
@@ -42,8 +52,11 @@ export default {
     RplCol,
     RplComplexDataTable,
     RplForm,
+    RplSearchForm,
     RplSearchResultsLayout,
+    RplSearchResultsLoading,
     RplSearchResultsTable,
+    RplSelect,
     RplTabs
   },
   data() {
@@ -62,20 +75,21 @@ export default {
         }
       ],
       total: 0,
-      distance: [5, 100],
-      specialtyservices: [],
       store: [],
-      loading: false,
+      loading: true,
+      sort: 'Suburb',
+      hasLocation: false,
       pager: {
         totalSteps: 0,
         initialStep: 1,
         stepsAround: 2
       },
-      open24hours: false,
       searchForm: {
         model: {
           suburb: '',
-          advancedFilters: ''
+          distance: [5, 100],
+          specialtyServices: [],
+          open24Hours: false,
         },
         schema: {
           groups: [
@@ -99,6 +113,16 @@ export default {
                 //   min: 5,
                 //   max: 100,
                 // },
+                // {
+                //   type: 'input',
+                //   inputType: 'range',
+                //   label: 'Filter by distance',
+                //   placeholder: 'x10',
+                //   min: 5,
+                //   step: 5,
+                //   max: 100,
+                //   model: 'distance'
+                // },
                 {
                   type: 'rplselect',
                   values: config.SPECIALTY_SERVICE_OPTIONS,
@@ -106,7 +130,7 @@ export default {
                   label: 'Specialty services or facilities',
                   placeholder: 'Select service/facility',
                   styleClasses: ['vp-form__element'],
-                  model: 'specialtyservices'
+                  model: 'specialtyServices'
                 }
               ]
             },
@@ -115,7 +139,7 @@ export default {
                 {
                   type: 'rplcheckbox',
                   inlineLabel: 'Locations open 24 hours',
-                  model: 'open24hours',
+                  model: 'open24Hours',
                 }
               ]
             },
@@ -134,7 +158,7 @@ export default {
                 {
                   type: 'rplsubmitloader',
                   buttonText: 'Search',
-                  styleClasses: ['vp-es-search-action'],
+                  styleClasses: ['vp-station-locator__form-submit'],
                   loading: false
                 }
               ]
@@ -177,20 +201,6 @@ export default {
           },
         ],
         results: [],
-        sortOptions: [
-          {
-            id: 'Suburb',
-            name: 'A-Z by suburb'
-          },
-          {
-            id: 'Site_Name',
-            name: 'A-Z by location'
-          },
-          {
-            id: 'Delay',
-            name: 'Shortest wait time'
-          }
-        ],
         submitOnFormUpdate: true,
       }
     }
@@ -273,8 +283,6 @@ export default {
           "size": params.limit
         })
         if (status === 200 && data && data.hits && data.hits.total && data.hits.total && data.hits.total.value && Array.isArray(data.hits.hits)) {
-          // this.total = data.hits.total.value
-          // this.pager.totalSteps = Math.ceil(this.total / config.RESULTS_PER_PAGE)
           this.store = data.hits.hits
           if (data.hits.total.value) {
             this.getPaginatedResults()
@@ -294,6 +302,20 @@ export default {
     },
     scrollToTop () {
       this.$refs.searchForm.scrollIntoView({behavior: 'smooth'})
+    },
+    sortUpdate (value) {
+      this.pager.initialStep = 1
+      this.sort = value
+      this.$refs.sortselect.close()
+      this.getPaginatedResults()
+      this.loading = true
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.loading = false
+          this.$refs.sortselect.$el.querySelector('[role="button"]').focus()
+        }, 210)
+      })
+      this.handleEvent('sort-change', value)
     }
   },
   computed: {
@@ -301,7 +323,32 @@ export default {
       return this.store
     },
     doSort () {
-      return this.store
+      switch (this.sort) {
+        case 'Suburb':
+          return sortBySuburb(this.store);
+        case 'Location':
+          return sortByLocation(this.store, this.location);
+        case 'Distance':
+          return sortByDistance(this.store);
+        default:
+          return this.store;
+      }
+    },
+    sortValues () {
+      return [
+        {
+          id: 'Suburb',
+          name: 'A-Z by suburb'
+        },
+        {
+          id: 'Location',
+          name: 'A-Z by location'
+        },
+        {
+          id: 'Distance',
+          name: 'Distance'
+        }
+      ]
     }
   }
 }
@@ -316,7 +363,7 @@ $vp-form-padding-desk: $rpl-space-4;
 $vp-form-element-spacing: $rpl-space-4;
 
 .vp-station-locator {
-  &__form {
+  &__form-container {
     padding: $vp-form-padding-mob;
 
     @include rpl_breakpoint('l') {
@@ -342,7 +389,7 @@ $vp-form-element-spacing: $rpl-space-4;
       }
     }
 
-    .vp-es-search-action,
+    .vp-station-locator__form-submit,
     [type=submit] {
       width: 100%;
     }
@@ -424,6 +471,38 @@ $vp-form-element-spacing: $rpl-space-4;
 
     &__label {
       display: none;
+    }
+  }
+
+  &__sort {
+    display: flex;
+    flex-direction: column;
+    @include rpl_breakpoint('m') {
+      margin: auto;
+      align-items: center;
+      flex-direction: row;
+    }
+    &-select {
+      @include rpl_typography_ruleset(('xs', 1em, 'regular'));
+      width: 100%;
+      @include rpl_breakpoint('m') {
+        width: rem(280px);
+      }
+    }
+    label {
+      text-align: left;
+      flex: 1 1 200px;
+      display: contents;
+      @include rpl_breakpoint('l') {
+        text-align: right;
+      }
+      .rpl-form-label {
+        @include rpl_typography_ruleset(('s', 24px, 'bold'));
+        margin-right: $rpl-space-2;
+        @include rpl_breakpoint_down('m') {
+          margin-bottom: $rpl-space-2;
+        }
+      }
     }
   }
 

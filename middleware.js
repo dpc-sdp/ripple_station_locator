@@ -1,3 +1,4 @@
+// Format station search results for display in table.
 export const mapTableRows = (results) => {
   if (results) {
     return results.map(station => {
@@ -11,6 +12,30 @@ export const mapTableRows = (results) => {
       ];
     })
   }
+}
+
+export const sortByDistance = (items, location) => {
+  if (!Array.isArray(items))
+    return []
+  return items
+}
+
+export const sortByLocation = (items) => {
+  if (!Array.isArray(items))
+    return []
+  const locationComparison = function (a, b) {
+    return a._source?.title?.toString() < b._source?.title?.toString() ? -1 : a._source?.title?.toString() > b._source?.title?.toString() ? 1 : 0;
+  }
+  return items.sort(locationComparison)
+}
+
+export const sortBySuburb = (items) => {
+  if (!Array.isArray(items))
+    return []
+  const suburbComparison = function (a, b) {
+    return a._source?.field_suburb?.toString() < b._source?.field_suburb?.toString() ? -1 : a._source?.field_suburb?.toString() > b._source?.field_suburb?.toString() ? 1 : 0;
+  }
+  return items.sort(suburbComparison)
 }
 
 // Map station data for the Suburb column.
