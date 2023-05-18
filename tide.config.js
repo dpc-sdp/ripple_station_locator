@@ -6,6 +6,7 @@ module.exports = {
       'field_state'
     ]
   },
+
   mapping: {
     landingPageComponents: {
       'paragraph--station_locator': {

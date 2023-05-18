@@ -8,9 +8,7 @@
         <span class="vp-station-location__state" v-if="state">{{ state }} </span>
         <span class="vp-station-location__postcode" v-if="postcode">{{ postcode }}</span>
       </div>
-      <vp-station-external-link :href="directionsUrl" v-if="directionsUrl">
-        Get directions
-      </vp-station-external-link>
+      <vp-station-external-link :href="directionsUrl" v-if="directionsUrl">Get directions</vp-station-external-link>
     </div>
     <div class="vp-station-location__accessibility" v-if="accessibility">
       <vp-station-list :items="accessibility" title="Accessibility"></vp-station-list>
