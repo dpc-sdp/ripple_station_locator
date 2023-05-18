@@ -1,17 +1,19 @@
 <template>
   <div class="vp-station-locator">
     <div class="vp-station-locator__form-container" ref="searchForm">
-    <rpl-form :formData="searchForm" class="vp-station-locator__form" :submitHandler="onSearchSubmit"
-      :submitFormOnClear="true" :scrollToMessage="false"></rpl-form>
+      <rpl-form :formData="searchForm" class="vp-station-locator__form" :submitHandler="onSearchSubmit"
+        :submitFormOnClear="true" :scrollToMessage="false"></rpl-form>
     </div>
     <rpl-tabs class="vp-station-locator__tabs" :tabs="tabs" :activeTab="activeTab" @rpl-tab-switch="switchTab" />
     <div class="vp-station-locator__map" v-if="activeTab === 'map'">Map view</div>
     <div class="vp-station-locator__list" v-if="activeTab === 'list'">
       <rpl-search-results-loading v-if="loading" />
-      <rpl-search-results-layout :searchResults="stationLocatorProps.results" :pager="pager" :count="total" @pager-change="getPaginatedResults" :loading="loading" v-if="!loading">
+      <rpl-search-results-layout :searchResults="stationLocatorProps.results" :pager="pager" :count="total"
+        @pager-change="getPaginatedResults" :loading="loading" v-if="!loading">
         <template v-slot:results="resultsProps">
           <rpl-col cols="full">
-            <rpl-complex-data-table :columns="stationLocatorProps.columns" :items="resultsProps.searchResults"></rpl-complex-data-table>
+            <rpl-complex-data-table :columns="stationLocatorProps.columns"
+              :items="resultsProps.searchResults"></rpl-complex-data-table>
           </rpl-col>
         </template>
         <template slot="sort">
@@ -19,7 +21,8 @@
             <label for="vp-sort-select">
               <span class="rpl-form-label">Sort by:</span>
             </label>
-            <rpl-select ref="sortselect" id="vp-sort-select" class="vp-station-locator__sort-select" :values="sortValues" :state="sort" @rpl-select-update="sortUpdate"/>
+            <rpl-select ref="sortselect" id="vp-sort-select" class="vp-station-locator__sort-select" :values="sortValues"
+              :state="sort" @rpl-select-update="sortUpdate" />
           </div>
         </template>
         <template slot="noresults">
@@ -226,7 +229,7 @@ export default {
       this.fetchData()
       this.handleEvent('form-submit')
     },
-    getPaginatedResults (paginationStepChangedEvent) {
+    getPaginatedResults(paginationStepChangedEvent) {
       this.loading = true
       if (!paginationStepChangedEvent) {
         // Initial page load, set up defaults
@@ -249,7 +252,7 @@ export default {
         this.loading = false
       }, 200)
     },
-    async onModelUpdate (newVal, schema) {
+    async onModelUpdate(newVal, schema) {
       this.handleEvent('form-update', { value: newVal, field: schema })
     },
     async fetchData(showLoading = true) {
@@ -302,10 +305,10 @@ export default {
         }, 200)
       }
     },
-    scrollToTop () {
-      this.$refs.searchForm.scrollIntoView({behavior: 'smooth'})
+    scrollToTop() {
+      this.$refs.searchForm.scrollIntoView({ behavior: 'smooth' })
     },
-    sortUpdate (value) {
+    sortUpdate(value) {
       this.pager.initialStep = 1
       this.sort = value
       this.$refs.sortselect.close()
@@ -319,10 +322,10 @@ export default {
     }
   },
   computed: {
-    doFilter () {
+    doFilter() {
       return this.store
     },
-    doSort () {
+    doSort() {
       switch (this.sort) {
         case 'Suburb':
           return sortBySuburb(this.store);
@@ -334,7 +337,7 @@ export default {
           return this.store;
       }
     },
-    sortValues () {
+    sortValues() {
       let values = [
         {
           id: 'Suburb',
@@ -480,28 +483,35 @@ $vp-form-element-spacing: $rpl-space-4;
   &__sort {
     display: flex;
     flex-direction: column;
+
     @include rpl_breakpoint('m') {
       margin: auto;
       align-items: center;
       flex-direction: row;
     }
+
     &-select {
       @include rpl_typography_ruleset(('xs', 1em, 'regular'));
       width: 100%;
+
       @include rpl_breakpoint('m') {
         width: rem(280px);
       }
     }
+
     label {
       text-align: left;
       flex: 1 1 200px;
       display: contents;
+
       @include rpl_breakpoint('l') {
         text-align: right;
       }
+
       .rpl-form-label {
         @include rpl_typography_ruleset(('s', 24px, 'bold'));
         margin-right: $rpl-space-2;
+
         @include rpl_breakpoint_down('m') {
           margin-bottom: $rpl-space-2;
         }
@@ -513,11 +523,11 @@ $vp-form-element-spacing: $rpl-space-4;
     &__heading {
       margin-bottom: rem(10px);
     }
+
     &__supporting-text {
       @include rpl_typography_font('l', 1.6875rem, 'regular');
 
       margin-top: 0;
     }
   }
-}
-</style>
+}</style>
