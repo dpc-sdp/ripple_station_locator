@@ -1,19 +1,19 @@
 <template>
   <div class="vp-station-specialty-services">
     <div class="vp-station-locator__subheading vp-station-locator__subheading--mobile" v-if="services">Specialty service or facility</div>
-    <vp-station-list :items="services"  class="vp-station-specialty-services__services"></vp-station-list>
-    <vp-station-list :items="accessibility" title="Accessibility" class="vp-station-specialty-services__accessibility"></vp-station-list>
+    <vp-station-unordered-list :items="services"  class="vp-station-specialty-services__services"></vp-station-unordered-list>
+    <vp-station-unordered-list :items="accessibility" title="Accessibility" class="vp-station-specialty-services__accessibility"></vp-station-unordered-list>
     <vp-station-prosecution-unit-details :prosecutionUnit="prosecutionUnit" class="vp-station-specialty-services__prosecution-unit"></vp-station-prosecution-unit-details>
   </div>
 </template>
 
 <script>
-import VpStationList from './VpStationList.vue';
+import VpStationUnorderedList from '@dpc-sdp/ripple-station-locator/components/VpStationUnorderedList.vue';
 import VpStationProsecutionUnitDetails from './VpStationProsecutionUnitDetails.vue';
 
 export default {
   components: {
-    VpStationList,
+    VpStationUnorderedList,
     VpStationProsecutionUnitDetails
   },
   props: {

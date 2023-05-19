@@ -11,7 +11,7 @@
       <vp-station-external-link :href="directionsUrl" v-if="directionsUrl">Get directions</vp-station-external-link>
     </div>
     <div class="vp-station-location__accessibility" v-if="accessibility">
-      <vp-station-list :items="accessibility" title="Accessibility"></vp-station-list>
+      <vp-station-unordered-list :items="accessibility" title="Accessibility"></vp-station-unordered-list>
     </div>
 
   </div>
@@ -19,13 +19,13 @@
 
 <script>
 import { RplLink } from '@dpc-sdp/ripple-link';
-import VpStationList from './VpStationList.vue';
+import VpStationUnorderedList from '@dpc-sdp/ripple-station-locator/components/VpStationUnorderedList.vue';
 import VpStationExternalLink from './VpStationExternalLink.vue';
 
 export default {
   components: {
     RplLink,
-    VpStationList,
+    VpStationUnorderedList,
     VpStationExternalLink
   },
   props: {
