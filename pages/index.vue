@@ -79,22 +79,24 @@
     </rpl-row>
     <rpl-row>
       <rpl-col>
-        Map
+        <gmap-embed mapMode="place" :title="`Google Map for ${page.title}`" :place="address"></gmap-embed>
       </rpl-col>
     </rpl-row>
   </div>
 </template>
 
 <script>
+import GmapEmbed from '../components/GmapEmbed.vue'
 import { RplDivider } from '@dpc-sdp/ripple-global'
 import { RplRow, RplCol } from '@dpc-sdp/ripple-grid'
 import RplRelatedLinks from '@dpc-sdp/ripple-related-links'
-import VpStationExternalLink from '../components/VpStationExternalLink.vue';
-import VpStationDescriptionListItem from '../components/VpStationDescriptionListItem.vue';
+import VpStationExternalLink from '../components/VpStationExternalLink.vue'
+import VpStationDescriptionListItem from '../components/VpStationDescriptionListItem.vue'
 import { config } from '../config'
 
 export default {
   components: {
+    GmapEmbed,
     RplCol,
     RplRow,
     RplDivider,
@@ -127,6 +129,9 @@ export default {
     },
     hasCaseConference() {
       return this.page.field_case_conference_email || this.page.field_case_conference_phone
+    },
+    address() {
+      return this.page.field_street_address + ', ' + this.page.field_suburb + ' ' + this.page.field_state.name + ' ' + this.page.field_postcode
     }
   }
 }

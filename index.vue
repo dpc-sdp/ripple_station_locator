@@ -1,10 +1,9 @@
 <template>
   <div class="vp-station-locator">
-    <!-- @todo: Form
-      <div class="vp-station-locator__form-container" ref="searchForm">
-      <rpl-form :formData="searchForm" class="vp-station-locator__form" :submitHandler="onSearchSubmit"
-        :submitFormOnClear="true" :scrollToMessage="false"></rpl-form>
-    </div> -->
+    <div class="vp-station-locator__form-container" ref="searchForm">
+      <!-- @todo: form <rpl-form :formData="searchForm" class="vp-station-locator__form" :submitHandler="onSearchSubmit"
+        :submitFormOnClear="true" :scrollToMessage="false"></rpl-form> -->
+    </div>
     <rpl-tabs class="vp-station-locator__tabs" :tabs="tabs" :activeTab="activeTab" @rpl-tab-switch="switchTab" />
     <div class="vp-station-locator__map" v-if="activeTab === 'map'">Map view</div>
     <div class="vp-station-locator__list" v-if="activeTab === 'list'">
@@ -531,4 +530,5 @@ $vp-form-element-spacing: $rpl-space-4;
       margin-top: 0;
     }
   }
-}</style>
+}
+</style>
