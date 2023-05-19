@@ -1,5 +1,5 @@
 <template>
-  <div class="tide-content tide-content--station">
+  <div class="tide-content tide-content--station vp-station">
     <rpl-row>
       <rpl-col :colsBp="{ l: 7 }">
         <div class="vp-station__section">
@@ -136,12 +136,21 @@ export default {
 @import "~@dpc-sdp/ripple-global/scss/settings";
 @import "~@dpc-sdp/ripple-global/scss/tools";
 
-$vp-station-section-margin: rem(40px);
+$vp-station-desktop-section-margin: rem(40px);
+$vp-station-mobile-section-margin: rem(24px);
 $vp-station-list-margin: rem(24px);
+$vp-station-banner-top-padding: rem(92px);
+$vp-station-banner-bottom-padding: rem(100px);
 
 .vp-station {
+  color: rpl_color('extra_dark_neutral');
+
   &__section {
-    margin-bottom: $vp-station-section-margin;
+    @include rpl-breakpoint('l') {
+      margin-bottom: $vp-station-desktop-section-margin;
+    }
+
+    margin-bottom: $vp-station-mobile-section-margin;
 
     h2 {
       margin-top: 0;
@@ -153,7 +162,22 @@ $vp-station-list-margin: rem(24px);
     margin-bottom: $vp-station-list-margin;
   }
 }
+
 .rpl-updated-date {
   display: none;
+}
+
+.rpl-above-content {
+  background: rpl_color('white') none no-repeat center;
+  background-size: 0;
+}
+
+.rpl-hero-banner {
+  @include rpl-breakpoint('l') {
+    padding-top: $vp-station-banner-top-padding;
+    padding-bottom: $vp-station-banner-bottom-padding;
+  }
+
+  border-bottom: 1px solid rpl_color('grey_2');
 }
 </style>

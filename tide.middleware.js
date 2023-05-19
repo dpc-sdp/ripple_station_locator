@@ -15,4 +15,10 @@ export default function station (context, pageData) {
       pageData.tidePage.breadcrumbs.splice(1, 0, { text: config.STATION_LOCATOR_LINK_TEXT, url: config.STATION_LOCATOR_LINK_URL })
     }
   }
+
+  // Banner
+  if (pageData.tidePage.appHeroBanner && pageData.tidePage.appHeroBanner.data) {
+    pageData.tidePage.appHeroBanner.data.backgroundGraphic = null
+    pageData.tidePage.appHeroBanner.data.showLinks = false
+  }
 }
