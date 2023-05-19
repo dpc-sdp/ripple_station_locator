@@ -139,6 +139,7 @@ export default {
 $vp-station-desktop-section-margin: rem(40px);
 $vp-station-mobile-section-margin: rem(24px);
 $vp-station-list-margin: rem(24px);
+$vp-station-content-top-padding: rem(36px);
 $vp-station-banner-top-padding: rem(92px);
 $vp-station-banner-bottom-padding: rem(100px);
 
@@ -179,5 +180,14 @@ $vp-station-banner-bottom-padding: rem(100px);
   }
 
   border-bottom: 1px solid rpl_color('grey_2');
+}
+
+.rpl-content {
+  @include rpl-breakpoint('l') {
+    padding-top: $vp-station-content-top-padding;
+  }
+  @include rpl-breakpoint('xl') {
+    padding-top: $vp-station-content-top-padding;
+  }
 }
 </style>
