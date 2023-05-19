@@ -1,4 +1,7 @@
 export const config = {
+  STATION_LOCATOR_LINK_TEXT: 'Find my local police station',
+  STATION_LOCATOR_LINK_URL: '/find-my-local-police-station',
+  RELATED_LINKS_TITLE: 'Related links',
   RESULTS_PER_PAGE: 10,
   NO_RESULTS_HEADING: 'Sorry, no police stations match your search.',
   NO_RESULTS_SUPPORTING_TEXT: 'Try again with different search criteria.',
