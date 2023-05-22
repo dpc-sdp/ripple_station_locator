@@ -33,7 +33,7 @@
         </div>
         <div class="vp-station__section" v-if="page.field_specialty_services_or_faci.length">
           <h3>Specialty services or facilities</h3>
-          <ul class="vp-station-list">
+          <ul>
             <li v-for="service, key in page.field_specialty_services_or_faci" :key="key">{{ service.name }}</li>
           </ul>
         </div>
@@ -164,11 +164,11 @@ $vp-station-banner-bottom-padding: rem(100px);
     h2 {
       margin-top: 0;
     }
-  }
-  &-description-list,
-  &-list {
-    margin-top: $vp-station-list-margin;
-    margin-bottom: $vp-station-list-margin;
+
+    ul, dl {
+      margin-top: $vp-station-list-margin;
+      margin-bottom: $vp-station-list-margin;
+    }
   }
 }
 

@@ -1,8 +1,8 @@
 <template>
   <div class="vp-station-locator">
     <div class="vp-station-locator__form-container" ref="searchForm">
-      <!-- @todo: form <rpl-form :formData="searchForm" class="vp-station-locator__form" :submitHandler="onSearchSubmit"
-        :submitFormOnClear="true" :scrollToMessage="false"></rpl-form> -->
+      <rpl-form :formData="searchForm" class="vp-station-locator__form" :submitHandler="onSearchSubmit"
+        :submitFormOnClear="true" :scrollToMessage="false"></rpl-form>
     </div>
     <rpl-tabs class="vp-station-locator__tabs" :tabs="tabs" :activeTab="activeTab" @rpl-tab-switch="switchTab" />
     <div class="vp-station-locator__map" v-if="activeTab === 'map'">Map view</div>
@@ -89,7 +89,7 @@ export default {
       searchForm: {
         model: {
           suburb: '',
-          distance: [5, 100],
+          distance: '100',
           specialtyServices: [],
           open24Hours: false,
           location: null
@@ -98,34 +98,23 @@ export default {
           groups: [
             {
               fields: [
-                // {
-                //   type: 'rplAutocomplete',
-                //   values: [],
-                //   label: 'Search by suburb or postcode',
-                //   styleClasses: ['vp-form__element'],
-                //   model: 'suburb',
-                //   placeholder: 'Search'
-                // },
-                // {
-                //   type: 'rplslider',
-                //   label: 'Filter by distance',
-                //   model: 'distance',
-                //   hint: '5km to 100km',
-                //   step: 1,
-                //   suffix: 'km',
-                //   min: 5,
-                //   max: 100,
-                // },
-                // {
-                //   type: 'input',
-                //   inputType: 'range',
-                //   label: 'Filter by distance',
-                //   placeholder: 'x10',
-                //   min: 5,
-                //   step: 5,
-                //   max: 100,
-                //   model: 'distance'
-                // },
+                {
+                  type: 'rplinput',
+                  label: 'Search by suburb or postcode',
+                  styleClasses: ['vp-form__element'],
+                  model: 'suburb',
+                  placeholder: 'Search',
+                  autocomplete: true
+                },
+                {
+                  type: 'rplselect',
+                  values: config.DISTANCE_OPTIONS,
+                  multiselect: false,
+                  label: 'Filter by distance',
+                  styleClasses: ['vp-form__element'],
+                  model: 'distance',
+                  disabled: this.getDistanceDisabled
+                },
                 {
                   type: 'rplselect',
                   values: config.SPECIALTY_SERVICE_OPTIONS,
@@ -151,7 +140,6 @@ export default {
                 {
                   type: 'rplclearform',
                   buttonText: 'Clear search filters',
-                  // visible: showClearOnDirtyForm,
                   styleClasses: ['form-group--center']
                 }
               ]
@@ -251,6 +239,9 @@ export default {
       setTimeout(() => {
         this.loading = false
       }, 200)
+    },
+    getDistanceDisabled() {
+      return !this.searchForm.model.location || this.activeTab === 'map'
     },
     async onModelUpdate(newVal, schema) {
       this.handleEvent('form-update', { value: newVal, field: schema })
@@ -423,20 +414,27 @@ $vp-form-element-spacing: $rpl-space-4;
       }
     }
 
-    .rpl-select__trigger {
-      background-color: #fff;
-      border-color: #d7dbe0;
+    input[type='text'].rpl-form-input__input,
+    .rpl-select__trigger,
+    .rpl-checkbox__box {
+      background-color: rpl-color('white');
+      border-color: rpl-color('grey_2');
     }
 
     .rpl-select--open {
       .rpl-select__trigger {
-        border-color: #274b93;
+        border-color: rpl-color('primary');
       }
     }
 
-    .rpl-checkbox__box {
-      background-color: #fff;
-      border-color: #d7dbe0;
+    .rpl-select.rpl-select--disabled {
+      .rpl-select__trigger {
+        color: rpl-color('dark_neutral');
+        background-color: rpl-color('grey');
+      }
+      .rpl-select__trigger-icon {
+        fill: rpl-color('blue_2');
+      }
     }
   }
 
