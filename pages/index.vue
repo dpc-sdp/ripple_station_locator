@@ -79,7 +79,7 @@
     </rpl-row>
     <rpl-row>
       <rpl-col>
-        <gmap-embed mapMode="place" :title="`Google Map for ${page.title}`" :place="address"></gmap-embed>
+        <gmap-embed :apiKey="apiKey" mapMode="place" :title="`Google Map for ${page.title}`" :place="address" v-bind="apiKey"></gmap-embed>
       </rpl-col>
     </rpl-row>
   </div>
@@ -132,6 +132,9 @@ export default {
     },
     address() {
       return this.page.field_street_address + ', ' + this.page.field_suburb + ' ' + this.page.field_state.name + ' ' + this.page.field_postcode
+    },
+    apiKey() {
+      return process.env.GOOGLE_WEB_API_KEY
     }
   }
 }
