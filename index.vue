@@ -62,7 +62,7 @@ export default {
     RplSelect,
     RplTabs
   },
-  data() {
+  data () {
     return {
       activeTab: 'list',
       tabs: [
@@ -113,6 +113,7 @@ export default {
                   label: 'Filter by distance',
                   styleClasses: ['vp-form__element'],
                   model: 'distance',
+                  default: '100',
                   disabled: this.getDistanceDisabled
                 },
                 {
@@ -132,6 +133,7 @@ export default {
                   type: 'rplcheckbox',
                   inlineLabel: 'Locations open 24 hours',
                   model: 'open24Hours',
+                  default: false
                 }
               ]
             },
@@ -196,11 +198,8 @@ export default {
       }
     }
   },
-  mounted() {
+  mounted () {
     this.fetchData()
-    if (this.submitOnFormUpdate) {
-      RplFormEventBus.$on('model-updated', this.onModelUpdate)
-    }
     RplFormEventBus.$on('clear-form', this.onClearForm)
   },
   methods: {
@@ -243,13 +242,7 @@ export default {
     getDistanceDisabled() {
       return !this.searchForm.model.location || this.activeTab === 'map'
     },
-    async onModelUpdate(newVal, schema) {
-      this.handleEvent('form-update', { value: newVal, field: schema })
-    },
-    async fetchData(showLoading = true) {
-      if (showLoading) {
-        this.loading = true
-      }
+    buildSearch() {
       let params = {}
       if (this.serverSideFiltering) {
         params = this.getRequestParams()
@@ -257,27 +250,53 @@ export default {
         params.limit = 9999
       }
 
+      let search = {
+        "query": {
+          "bool": {
+            "must": [
+              {
+                "match": {
+                  "type": "station"
+                }
+              },
+              {
+                "match": {
+                  "field_node_site": "4"
+                }
+              }
+            ]
+          }
+        },
+        "size": params.limit
+      }
+      if (this.searchForm.model.open24Hours) {
+        search.query.bool.must_not = [
+          {
+            "match_phrase": {
+              "field_opening_hours": "Non-24 Hours"
+            }
+          }
+        ]
+      }
+      this.searchForm.model.specialtyServices.forEach(function(item, index, arr) {
+        search.query.bool.must.push({
+          "match_phrase": {
+            "field_specialty_services_or_faci_name": item
+          }
+        })
+      })
+      return search
+    },
+    async onModelUpdate(newVal, schema) {
+      this.handleEvent('form-update', { value: newVal, field: schema })
+    },
+    async fetchData(showLoading = true) {
+      if (showLoading) {
+        this.loading = true
+      }
       const BASE_URL = this.$nuxt.context.$tideSearchApi.baseUrl
       try {
-        const { data, status } = await this.$axios.post(`${BASE_URL}dsl`, {
-          "query": {
-            "bool": {
-              "must": [
-                {
-                  "match": {
-                    "type": "station"
-                  }
-                },
-                {
-                  "match": {
-                    "field_node_site": "4"
-                  }
-                }
-              ]
-            }
-          },
-          "size": params.limit
-        })
+        const { data, status } = await this.$axios.post(`${BASE_URL}dsl`, this.buildSearch())
         if (status === 200 && data && data.hits && data.hits.total && data.hits.total && data.hits.total.value && Array.isArray(data.hits.hits)) {
           this.store = data.hits.hits
           if (data.hits.total.value) {
@@ -411,6 +430,14 @@ $vp-form-element-spacing: $rpl-space-4;
 
       &:last-child {
         margin-bottom: 0;
+      }
+    }
+
+    .vue-form-generator {
+      .rpl-checkbox__box--checked {
+        .rpl-icon {
+          fill: rpl-color('dark_primary');
+        }
       }
     }
 
