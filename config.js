@@ -41,8 +41,8 @@ export const config = {
       name: 'Crime Scene Services (CSS)'
     },
     {
-      id: 'Divisional Intilligence Unit (DIU)',
-      name: 'Divisional Intilligence Unit (DIU)'
+      id: 'Divisional Intelligence Unit (DIU)',
+      name: 'Divisional Intelligence Unit (DIU)'
     },
     {
       id: 'Family Violence Investigations Unit (FVIU)',

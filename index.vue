@@ -278,13 +278,15 @@ export default {
           }
         ]
       }
-      this.searchForm.model.specialtyServices.forEach(function(item, index, arr) {
-        search.query.bool.must.push({
-          "match_phrase": {
-            "field_specialty_services_or_faci_name": item
-          }
+      if (this.searchForm.model.specialtyServices) {
+        this.searchForm.model.specialtyServices.forEach(function(item, index, arr) {
+          search.query.bool.must.push({
+            "match_phrase": {
+              "field_specialty_services_or_faci_name": item
+            }
+          })
         })
-      })
+      }
       return search
     },
     async onModelUpdate(newVal, schema) {
@@ -297,11 +299,10 @@ export default {
       const BASE_URL = this.$nuxt.context.$tideSearchApi.baseUrl
       try {
         const { data, status } = await this.$axios.post(`${BASE_URL}dsl`, this.buildSearch())
-        if (status === 200 && data && data.hits && data.hits.total && data.hits.total && data.hits.total.value && Array.isArray(data.hits.hits)) {
-          this.store = data.hits.hits
-          if (data.hits.total.value) {
-            this.getPaginatedResults()
-          }
+        if (status === 200 && !data.timed_out) {
+          this.store = data.hits?.hits ? data.hits.hits : []
+          this.total = this.store.length
+          this.getPaginatedResults()
         }
       } catch (error) {
         console.error(error)
