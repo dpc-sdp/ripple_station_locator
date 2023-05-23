@@ -1,4 +1,5 @@
 export const config = {
+  GOOGLE_WEB_API_KEY: process.env.GOOGLE_WEB_API_KEY,
   STATION_LOCATOR_LINK_TEXT: 'Find my local police station',
   STATION_LOCATOR_LINK_URL: '/find-my-local-police-station',
   RELATED_LINKS_TITLE: 'Related links',

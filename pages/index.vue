@@ -117,7 +117,8 @@ export default {
           text: config.STATION_LOCATOR_LINK_TEXT
         }
       ],
-      relatedLinksTitle: config.RELATED_LINKS_TITLE
+      relatedLinksTitle: config.RELATED_LINKS_TITLE,
+      apiKey: config.GOOGLE_WEB_API_KEY
     }
   },
   computed: {
@@ -132,9 +133,6 @@ export default {
     },
     address() {
       return this.page.field_street_address + ', ' + this.page.field_suburb + ' ' + this.page.field_state.name + ' ' + this.page.field_postcode
-    },
-    apiKey() {
-      return process.env.GOOGLE_WEB_API_KEY
     }
   }
 }
