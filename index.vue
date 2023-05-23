@@ -88,7 +88,6 @@ export default {
       },
       searchForm: {
         model: {
-          suburb: '',
           distance: '100',
           specialtyServices: [],
           open24Hours: false,
@@ -132,8 +131,7 @@ export default {
                 {
                   type: 'rplcheckbox',
                   inlineLabel: 'Locations open 24 hours',
-                  model: 'open24Hours',
-                  default: false
+                  model: 'open24Hours'
                 }
               ]
             },
@@ -142,7 +140,8 @@ export default {
                 {
                   type: 'rplclearform',
                   buttonText: 'Clear search filters',
-                  styleClasses: ['form-group--center']
+                  styleClasses: ['form-group--center'],
+                  visible: this.showClearOnDirtyForm
                 }
               ]
             },
@@ -221,7 +220,6 @@ export default {
       if (!paginationStepChangedEvent) {
         // Initial page load, set up defaults
         this.pager.initialStep = 1
-        // this.commitSearchOptions()
       } else {
         // Pagination component was clicked
         this.scrollToTop()
@@ -269,6 +267,8 @@ export default {
         },
         "size": params.limit
       }
+
+      // Stations open 24 hours.
       if (this.searchForm.model.open24Hours) {
         search.query.bool.must_not = [
           {
@@ -278,6 +278,8 @@ export default {
           }
         ]
       }
+
+      // Require all checked services and facilities.
       if (this.searchForm.model.specialtyServices) {
         this.searchForm.model.specialtyServices.forEach(function(item, index, arr) {
           search.query.bool.must.push({
@@ -330,7 +332,10 @@ export default {
         }, 210)
       })
       this.handleEvent('sort-change', value)
-    }
+    },
+    showClearOnDirtyForm() {
+      return this.searchForm.model.distance !== '100' || this.searchForm.model.specialtyServices.length || this.searchForm.model.open24hours || this.searchForm.model.location
+    },
   },
   computed: {
     doFilter() {
@@ -348,6 +353,7 @@ export default {
           return this.store;
       }
     },
+
     sortValues() {
       let values = [
         {
