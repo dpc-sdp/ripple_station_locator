@@ -88,7 +88,6 @@ export default {
       },
       searchForm: {
         model: {
-          distance: '100',
           specialtyServices: [],
           open24Hours: false,
           location: null
@@ -107,16 +106,6 @@ export default {
                 },
                 {
                   type: 'rplselect',
-                  values: config.DISTANCE_OPTIONS,
-                  multiselect: false,
-                  label: 'Filter by distance',
-                  styleClasses: ['vp-form__element'],
-                  model: 'distance',
-                  default: '100',
-                  disabled: this.getDistanceDisabled
-                },
-                {
-                  type: 'rplselect',
                   values: config.SPECIALTY_SERVICE_OPTIONS,
                   multiselect: true,
                   label: 'Specialty services or facilities',
@@ -131,7 +120,8 @@ export default {
                 {
                   type: 'rplcheckbox',
                   inlineLabel: 'Locations open 24 hours',
-                  model: 'open24Hours'
+                  model: 'open24Hours',
+                  default: false
                 }
               ]
             },
@@ -237,9 +227,6 @@ export default {
         this.loading = false
       }, 200)
     },
-    getDistanceDisabled() {
-      return !this.searchForm.model.location || this.activeTab === 'map'
-    },
     buildSearch() {
       let params = {}
       if (this.serverSideFiltering) {
@@ -302,7 +289,7 @@ export default {
       try {
         const { data, status } = await this.$axios.post(`${BASE_URL}dsl`, this.buildSearch())
         if (status === 200 && !data.timed_out) {
-          this.store = data.hits?.hits ? data.hits.hits : []
+          this.store = data.hits.hits ? data.hits.hits : []
           this.total = this.store.length
           this.getPaginatedResults()
         }
@@ -334,7 +321,7 @@ export default {
       this.handleEvent('sort-change', value)
     },
     showClearOnDirtyForm() {
-      return this.searchForm.model.distance !== '100' || this.searchForm.model.specialtyServices.length || this.searchForm.model.open24hours || this.searchForm.model.location
+      return this.searchForm.model.specialtyServices?.length || this.searchForm.model.open24Hours || this.searchForm.model.location
     },
   },
   computed: {

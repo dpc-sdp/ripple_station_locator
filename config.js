@@ -5,28 +5,6 @@ export const config = {
   RESULTS_PER_PAGE: 10,
   NO_RESULTS_HEADING: 'Sorry, no police stations match your search.',
   NO_RESULTS_SUPPORTING_TEXT: 'Try again with different search criteria.',
-  DISTANCE_OPTIONS: [
-    {
-      id: '5',
-      name: 'Within 5km'
-    },
-    {
-      id: '10',
-      name: 'Within 10km'
-    },
-    {
-      id: '25',
-      name: 'Within 25km'
-    },
-    {
-      id: '50',
-      name: 'Within 50km'
-    },
-    {
-      id: '100',
-      name: 'Within 100km'
-    }
-  ],
   SPECIALTY_SERVICE_OPTIONS: [
     {
       id: 'Crime Investigations Unit (CIU)',
